@@ -5,219 +5,257 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>消火器具 機器点検票</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Hiragino Sans', 'Meiryo', 'MS Gothic', sans-serif; background: #f0f2f5; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Hiragino Sans', 'Meiryo', 'MS PGothic', sans-serif;
+  background: #e8e8e8;
+}
 
-  .screen-bar {
-    background: #c0392b;
-    color: white;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
-  .screen-bar h1 { font-size: 15px; font-weight: 700; }
-  .btn {
-    padding: 8px 20px;
-    border-radius: 6px;
-    border: none;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-  }
-  .btn-print { background: white; color: #c0392b; }
-  .btn-back { background: rgba(255,255,255,0.2); color: white; }
-  .btn-group { margin-left: auto; display: flex; gap: 10px; }
+/* 画面表示用バー */
+.screenbar {
+  background: #2c3e50;
+  color: white;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.screenbar h1 { font-size: 14px; font-weight: 700; }
+.btn {
+  padding: 6px 14px;
+  border-radius: 3px;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-print { background: #c0392b; color: white; }
+.btn-print:hover { background: #a93226; }
+.btn-back { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+.btn-back:hover { background: rgba(255,255,255,0.25); }
+.ml-auto { margin-left: auto; display: flex; gap: 8px; }
 
-  .page-wrapper { padding: 24px; max-width: 950px; margin: 0 auto; }
+/* 用紙ラッパー */
+.page-wrap {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
 
-  /* ===== 点検票本体 ===== */
-  .report {
-    background: white;
-    border: 2px solid #333;
-    font-size: 11px;
-    line-height: 1.4;
-  }
+/* 点検票本体 */
+.ticket {
+  background: white;
+  border: 1.5px solid #333;
+  font-size: 11px;
+}
 
-  .report-header {
-    display: flex;
-    border-bottom: 2px solid #333;
-  }
-  .report-title-block {
-    flex: 1;
-    padding: 8px 12px;
-    border-right: 1px solid #333;
-  }
-  .report-title-block .main-title {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    margin-bottom: 2px;
-  }
-  .report-title-block .sub-title {
-    font-size: 12px;
-    font-weight: 700;
-    color: #333;
-    border: 1px solid #333;
-    display: inline-block;
-    padding: 1px 8px;
-  }
-  .report-meta {
-    width: 280px;
-    display: flex;
-    flex-direction: column;
-  }
-  .meta-row {
-    display: flex;
-    border-bottom: 1px solid #333;
-    min-height: 28px;
-    align-items: stretch;
-  }
-  .meta-row:last-child { border-bottom: none; }
-  .meta-label {
-    background: #f5f5f5;
-    padding: 4px 8px;
-    font-weight: 700;
-    font-size: 10px;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    border-right: 1px solid #333;
-    min-width: 80px;
-  }
-  .meta-value {
-    padding: 4px 8px;
-    display: flex;
-    align-items: center;
-    flex: 1;
-    font-size: 11px;
-  }
+/* ヘッダー段 */
+.ticket-hd {
+  display: flex;
+  border-bottom: 1.5px solid #333;
+}
+.title-block {
+  flex: 1;
+  padding: 8px 14px;
+  border-right: 1px solid #333;
+}
+.title-main {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+.title-sub {
+  display: inline-block;
+  border: 1.5px solid #333;
+  padding: 2px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 2px;
+  letter-spacing: 0.12em;
+}
+.title-law {
+  font-size: 9px;
+  color: #777;
+  margin-top: 4px;
+}
+.meta-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+}
+.meta-row {
+  display: flex;
+  border-bottom: 1px solid #333;
+  min-height: 26px;
+}
+.meta-row:last-child { border-bottom: none; }
+.meta-lbl {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 90px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #333;
+}
+.meta-val {
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  flex: 1;
+}
 
-  .info-block {
-    border-bottom: 2px solid #333;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .info-cell {
-    padding: 6px 10px;
-    border-right: 1px solid #333;
-    min-height: 36px;
-  }
-  .info-cell:last-child { border-right: none; }
-  .info-cell .lbl { font-size: 9px; color: #555; font-weight: 700; margin-bottom: 2px; }
-  .info-cell .val { font-size: 12px; }
+/* 物件情報段 */
+.info-strip {
+  display: flex;
+  border-bottom: 1.5px solid #333;
+}
+.info-cell {
+  flex: 1;
+  padding: 5px 10px;
+  border-right: 1px solid #333;
+  min-height: 32px;
+}
+.info-cell:last-child { border-right: none; }
+.info-cell .lbl { font-size: 9px; color: #666; font-weight: 700; margin-bottom: 2px; }
+.info-cell .val { font-size: 12px; }
 
-  /* メインテーブル */
-  table.checklist {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 10px;
-  }
-  table.checklist th {
-    background: #2c3e50;
-    color: white;
-    padding: 6px 4px;
-    text-align: center;
-    border: 1px solid #333;
-    font-size: 10px;
-    line-height: 1.3;
-    vertical-align: middle;
-  }
-  table.checklist th.red-hd { background: #c0392b; }
-  table.checklist td {
-    padding: 5px 4px;
-    border: 1px solid #ccc;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 11px;
-  }
-  table.checklist tr:nth-child(even) td { background: #fafafa; }
-  td.left { text-align: left; }
-  td.ok { color: #27ae60; font-weight: 700; }
-  td.ng { color: #c0392b; font-weight: 700; background: #fdf2f2 !important; }
-  td.abnormal { color: #e67e22; }
+/* テーブル */
+table.check {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  table-layout: fixed;
+}
+table.check th {
+  background: #2c3e50;
+  color: white;
+  padding: 5px 3px;
+  text-align: center;
+  border: 1px solid #333;
+  font-size: 9.5px;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+table.check th.s-hd { background: #3d566e; }
+table.check th.r-hd { background: #c0392b; }
+table.check td {
+  border: 1px solid #ccc;
+  padding: 4px 3px;
+  text-align: center;
+  vertical-align: middle;
+  height: 24px;
+}
+table.check tr:nth-child(even) td { background: #f8f9fb; }
+table.check td.tl { text-align: left; padding-left: 5px; }
+table.check td.abn { color: #c0392b; font-weight: 700; }
+table.check td.ok { color: #27ae60; font-weight: 700; font-size: 14px; background: #f0faf4; }
+table.check td.ng { color: #c0392b; font-weight: 700; font-size: 14px; background: #fdf2f2; }
+table.check td.empty { color: #ddd; }
 
-  .judgment-cell { font-size: 14px; font-weight: 700; }
+/* 署名段 */
+.sign-strip {
+  display: flex;
+  border-top: 1.5px solid #333;
+}
+.sign-cell {
+  flex: 1;
+  padding: 8px 12px;
+  border-right: 1px solid #333;
+  min-height: 55px;
+}
+.sign-cell:last-child { border-right: none; }
+.sign-cell .lbl { font-size: 9px; color: #666; font-weight: 700; margin-bottom: 5px; }
+.sign-cell .val { font-size: 12px; }
 
-  .sign-block {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    border-top: 2px solid #333;
-  }
-  .sign-cell {
-    padding: 8px 12px;
-    border-right: 1px solid #333;
-    min-height: 60px;
-  }
-  .sign-cell:last-child { border-right: none; }
-  .sign-cell .lbl { font-size: 10px; color: #555; font-weight: 700; margin-bottom: 6px; }
-  .sign-cell .val { font-size: 12px; }
+/* フッター注記 */
+.foot-note {
+  background: #f8f8f8;
+  border-top: 1px solid #ddd;
+  padding: 5px 12px;
+  font-size: 9px;
+  color: #666;
+  line-height: 1.6;
+}
 
-  .footer-note {
-    background: #f9f9f9;
-    border-top: 1px solid #ddd;
-    padding: 6px 12px;
-    font-size: 10px;
-    color: #666;
-  }
+/* 要交換リスト */
+.ng-summary {
+  border: 1.5px solid #c0392b;
+  margin-top: 16px;
+  background: white;
+}
+.ng-title {
+  background: #c0392b;
+  color: white;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.ng-body { padding: 10px 12px; }
+.ng-item { font-size: 12px; padding: 3px 0; border-bottom: 1px solid #f5e6e6; }
+.ng-item:last-child { border-bottom: none; }
 
-  /* 印刷ボタン非表示 */
-  @media print {
-    .screen-bar { display: none !important; }
-    .page-wrapper { padding: 0; max-width: 100%; }
-    body { background: white; }
-    .report { border: 1px solid #333; }
-    @page { size: A4 landscape; margin: 8mm; }
-  }
+/* 印刷設定 */
+@media print {
+  .screenbar { display: none !important; }
+  .page-wrap { padding: 0; max-width: 100%; }
+  body { background: white; }
+  .ng-summary { break-before: page; }
+  @page { size: A4 landscape; margin: 8mm; }
+}
 </style>
 </head>
 <body>
 
-<div class="screen-bar no-print">
-  <h1>🔥 消火器具 機器点検票 プレビュー</h1>
-  <div class="btn-group">
-    <a href="/" class="btn btn-back">← 入力に戻る</a>
+<div class="screenbar">
+  <span>🔥</span>
+  <h1>消火器具 機器点検票 — プレビュー</h1>
+  <div class="ml-auto">
+    <a href="/" class="btn btn-back">← 入力画面へ戻る</a>
     <button class="btn btn-print" onclick="window.print()">🖨 PDF・印刷</button>
   </div>
 </div>
 
-<div class="page-wrapper">
-<div class="report">
+<div class="page-wrap">
+<div class="ticket">
 
   <!-- ヘッダー -->
-  <div class="report-header">
-    <div class="report-title-block">
-      <div class="main-title">消 火 器 具</div>
-      <div class="sub-title">機 器 点 検 票</div>
+  <div class="ticket-hd">
+    <div class="title-block">
+      <div class="title-main">消 火 器 具</div>
+      <div class="title-sub">機 器 点 検 票</div>
+      <div class="title-law">消防法第17条の3の3に基づく点検結果（消防庁告示様式準拠）</div>
     </div>
-    <div class="report-meta">
+    <div class="meta-block">
       <div class="meta-row">
-        <div class="meta-label">点検年月日</div>
-        <div class="meta-value">
-          令和{{ header.date_y }}年{{ header.date_m }}月{{ header.date_d }}日
+        <div class="meta-lbl">点 検 年 月 日</div>
+        <div class="meta-val">
+          令和{{ header.date_y or '　' }}年{{ header.date_m or '　' }}月{{ header.date_d or '　' }}日
         </div>
       </div>
       <div class="meta-row">
-        <div class="meta-label">点検対象期間</div>
-        <div class="meta-value">
-          {{ header.period_from }}〜{{ header.period_to }}
-        </div>
+        <div class="meta-lbl">点 検 対 象 期 間</div>
+        <div class="meta-val">{{ header.period_from or '　' }}〜{{ header.period_to or '　' }}</div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-lbl">点 検 本 数</div>
+        <div class="meta-val">{{ items | length }} 本</div>
       </div>
     </div>
   </div>
 
-  <!-- 建物・点検者情報 -->
-  <div class="info-block">
+  <!-- 物件情報 -->
+  <div class="info-strip">
     <div class="info-cell">
       <div class="lbl">防火対象物名称</div>
       <div class="val">{{ header.building_name or '　' }}</div>
     </div>
     <div class="info-cell">
-      <div class="lbl">所在地</div>
+      <div class="lbl">所 在 地</div>
       <div class="val">{{ header.address or '　' }}</div>
     </div>
     <div class="info-cell">
@@ -226,62 +264,77 @@
     </div>
   </div>
 
-  <!-- 点検一覧テーブル -->
-  <table class="checklist">
+  <!-- 点検テーブル -->
+  <table class="check">
+    <colgroup>
+      <col style="width:28px">
+      <col style="width:88px">
+      <col style="width:80px">
+      <col style="width:58px">
+      <col style="width:44px">
+      <col style="width:50px">
+      <col style="width:56px">
+      <col style="width:50px">
+      <col style="width:44px">
+      <col style="width:62px">
+      <col style="width:66px">
+      <col style="width:38px">
+      <col>
+    </colgroup>
     <thead>
       <tr>
-        <th rowspan="2" style="width:32px">No.</th>
-        <th rowspan="2" style="width:90px">設置場所</th>
-        <th rowspan="2" style="width:80px">種　別</th>
-        <th rowspan="2" style="width:55px">能力単位</th>
-        <th rowspan="2" style="width:45px">製造年</th>
-        <th colspan="6">外形等の点検</th>
-        <th rowspan="2" style="width:65px">指示圧力値<br>（MPa）</th>
-        <th rowspan="2" class="red-hd" style="width:40px">判　定</th>
-        <th rowspan="2" style="width:80px">備　考</th>
+        <th rowspan="2">No</th>
+        <th rowspan="2">設置場所</th>
+        <th rowspan="2">種　別</th>
+        <th rowspan="2">能力単位</th>
+        <th rowspan="2">製造年</th>
+        <th colspan="5" class="s-hd">外 形 等 の 点 検</th>
+        <th rowspan="2">指示圧力値<br>（MPa）</th>
+        <th rowspan="2" class="r-hd">判定</th>
+        <th rowspan="2">備　考</th>
       </tr>
       <tr>
-        <th style="width:50px">外　形</th>
-        <th style="width:55px">安全栓・封板</th>
-        <th style="width:50px">本体容器</th>
-        <th style="width:45px">キャップ</th>
-        <th style="width:60px">ホース・<br>ノズル</th>
-        <th style="width:45px">確認栓</th>
+        <th class="s-hd">外形</th>
+        <th class="s-hd">安全栓・封板</th>
+        <th class="s-hd">本体容器</th>
+        <th class="s-hd">キャップ</th>
+        <th class="s-hd">ホース・<br>ノズル</th>
       </tr>
     </thead>
     <tbody>
       {% for item in items %}
       <tr>
         <td>{{ item.no }}</td>
-        <td class="left">{{ item.location }}</td>
+        <td class="tl">{{ item.location }}</td>
         <td>{{ item.type }}</td>
         <td>{{ item.capacity }}</td>
         <td>{{ item.year }}</td>
-        <td class="{{ 'abnormal' if item.outer != '正常' else '' }}">{{ item.outer }}</td>
-        <td class="{{ 'abnormal' if item.safety_pin != '正常' else '' }}">{{ item.safety_pin }}</td>
-        <td class="{{ 'abnormal' if item.body != '正常' else '' }}">{{ item.body }}</td>
-        <td class="{{ 'abnormal' if item.cap != '正常' else '' }}">{{ item.cap }}</td>
-        <td class="{{ 'abnormal' if item.hose != '正常' else '' }}">{{ item.hose }}</td>
-        <td>－</td>
-        <td>{{ item.pressure or '－' }}</td>
-        <td class="judgment-cell {{ 'ok' if item.judgment == '適' else 'ng' }}">{{ item.judgment }}</td>
-        <td class="left">{{ item.note }}</td>
+        <td{% if item.outer != '正常' %} class="abn"{% endif %}>{{ item.outer }}</td>
+        <td{% if item.safety_pin != '正常' %} class="abn"{% endif %}>{{ item.safety_pin }}</td>
+        <td{% if item.body != '正常' %} class="abn"{% endif %}>{{ item.body }}</td>
+        <td{% if item.cap != '正常' %} class="abn"{% endif %}>{{ item.cap }}</td>
+        <td{% if item.hose != '正常' %} class="abn"{% endif %}>{{ item.hose }}</td>
+        <td>{{ item.pressure if item.pressure else '－' }}</td>
+        <td class="{{ 'ok' if item.is_ok else 'ng' }}">{{ item.judgment }}</td>
+        <td class="tl">{{ item.note }}</td>
       </tr>
       {% endfor %}
-      {% for _ in range([10 - items|length, 0]|max) %}
+      {% set pad = 10 - items|length if items|length < 10 else 0 %}
+      {% for i in range(pad) %}
       <tr>
-        <td style="color:#ccc">{{ items|length + loop.index }}</td>
+        <td class="empty">{{ items|length + i + 1 }}</td>
         <td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+        <td></td><td></td><td></td><td></td><td></td>
+        <td></td><td></td><td></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
   <!-- 署名欄 -->
-  <div class="sign-block">
+  <div class="sign-strip">
     <div class="sign-cell">
-      <div class="lbl">点検者氏名</div>
+      <div class="lbl">点 検 者 氏 名</div>
       <div class="val">{{ header.inspector_name or '　' }}</div>
     </div>
     <div class="sign-cell">
@@ -289,17 +342,36 @@
       <div class="val">{{ header.inspector_num or '　' }}</div>
     </div>
     <div class="sign-cell">
-      <div class="lbl">確認印</div>
-      <div class="val"></div>
+      <div class="lbl">確 認 印</div>
     </div>
   </div>
 
-  <div class="footer-note">
-    ※ 判定欄：「適」= 異常なし　「否」= 要交換・要修理　　本点検票は消防法第17条の3の3に基づき作成
+  <!-- 注記 -->
+  <div class="foot-note">
+    ※ 判定「適」＝良好・異常なし　「否」＝要交換・要修理（次回点検前に改修すること）<br>
+    ※ 指示圧力値は加圧式消火器のみ記入。蓄圧式は圧力ゲージ目視確認。
   </div>
 
 </div>
-</div>
 
+{% set ng_items = items | selectattr('is_ok', 'equalto', false) | list %}
+{% if ng_items %}
+<div class="ng-summary">
+  <div class="ng-title">⚠ 要交換・要修理 一覧（判定：否）</div>
+  <div class="ng-body">
+    {% for item in ng_items %}
+    <div class="ng-item">
+      No.{{ item.no }}　{{ item.location }}　{{ item.type }}
+      {% if item.outer != '正常' %}　／　外形：{{ item.outer }}{% endif %}
+      {% if item.safety_pin != '正常' %}　／　安全栓：{{ item.safety_pin }}{% endif %}
+      {% if item.body != '正常' %}　／　本体：{{ item.body }}{% endif %}
+      {% if item.note %}　― {{ item.note }}{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+</div>
 </body>
 </html>

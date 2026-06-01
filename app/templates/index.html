@@ -3,300 +3,580 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>消防設備点検システム | PSL Demo</title>
+<title>消防設備点検システム PSL</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
-    background: #f0f2f5;
-    color: #1a1a1a;
-    min-height: 100vh;
-  }
-  .top-bar {
-    background: #c0392b;
-    color: white;
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .top-bar .icon { font-size: 22px; }
-  .top-bar h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.05em; }
-  .top-bar .sub { font-size: 12px; opacity: 0.8; margin-left: auto; }
-  .container { max-width: 800px; margin: 32px auto; padding: 0 16px 48px; }
-  .card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    padding: 28px;
-    margin-bottom: 20px;
-  }
-  .card-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #c0392b;
-    border-left: 4px solid #c0392b;
-    padding-left: 10px;
-    margin-bottom: 20px;
-  }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .form-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group.full { grid-column: 1 / -1; }
-  label { font-size: 12px; color: #666; font-weight: 600; }
-  input, select {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 9px 12px;
-    font-size: 14px;
-    font-family: inherit;
-    transition: border-color 0.2s;
-  }
-  input:focus, select:focus { outline: none; border-color: #c0392b; }
-  .date-row { display: flex; align-items: center; gap: 6px; }
-  .date-row input { width: 60px; text-align: center; }
-  .date-row span { font-size: 13px; color: #555; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Hiragino Sans', 'Meiryo', 'MS PGothic', sans-serif; overflow: hidden; }
 
-  .extinguisher-section { margin-top: 8px; }
-  .ext-card {
-    border: 1px solid #e8e8e8;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 16px;
-    background: #fafafa;
-    position: relative;
-  }
-  .ext-num {
-    font-size: 13px;
-    font-weight: 700;
-    color: #c0392b;
-    margin-bottom: 14px;
-  }
-  .check-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .check-group label { font-size: 11px; color: #555; }
-  .check-group select { font-size: 13px; padding: 7px 10px; }
-  .judgment-ok { background: #eafaf1; }
-  .judgment-ng { background: #fdf2f2; }
+/* タイトルバー */
+.titlebar {
+  background: #c0392b;
+  color: white;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 8px;
+  flex-shrink: 0;
+  user-select: none;
+}
+.titlebar .icon { font-size: 16px; }
+.titlebar .app-name { font-size: 13px; font-weight: 700; letter-spacing: 0.05em; }
+.titlebar .form-badge {
+  margin-left: 8px;
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+.titlebar .spacer { flex: 1; }
+.titlebar .ver { font-size: 10px; opacity: 0.7; }
 
-  .count-control {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-  .count-control button {
-    width: 36px; height: 36px;
-    border: 2px solid #c0392b;
-    background: white;
-    color: #c0392b;
-    border-radius: 50%;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s;
-  }
-  .count-control button:hover { background: #c0392b; color: white; }
-  .count-control span { font-size: 16px; font-weight: 700; min-width: 20px; text-align: center; }
+/* ツールバー */
+.toolbar {
+  background: #ececec;
+  border-bottom: 1px solid #bbb;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.tb-btn {
+  height: 26px;
+  padding: 0 10px;
+  background: #f5f5f5;
+  border: 1px solid #bbb;
+  border-radius: 2px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #333;
+  white-space: nowrap;
+}
+.tb-btn:hover { background: #e0e0e0; border-color: #999; }
+.tb-btn.primary {
+  background: #c0392b;
+  color: white;
+  border-color: #a93226;
+  font-weight: 700;
+}
+.tb-btn.primary:hover { background: #a93226; }
+.tb-sep { width: 1px; background: #bbb; height: 20px; margin: 0 4px; }
 
-  .submit-btn {
-    display: block;
-    width: 100%;
-    padding: 16px;
-    background: #c0392b;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.05em;
-    transition: background 0.2s;
-    margin-top: 8px;
-  }
-  .submit-btn:hover { background: #a93226; }
+/* メインレイアウト */
+.main-layout {
+  display: flex;
+  height: calc(100vh - 34px - 36px - 22px);
+}
 
-  @media (max-width: 600px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .form-grid.triple { grid-template-columns: 1fr 1fr; }
-    .check-row { grid-template-columns: 1fr 1fr; }
-  }
+/* サイドバー */
+.sidebar {
+  width: 148px;
+  background: #2c3e50;
+  flex-shrink: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sb-section {
+  padding: 8px 10px 4px;
+  font-size: 9px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+.sb-item {
+  padding: 7px 10px 7px 12px;
+  font-size: 12px;
+  color: #bdc3c7;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
+}
+.sb-item:hover { background: rgba(255,255,255,0.08); color: #ecf0f1; }
+.sb-item.active {
+  background: rgba(192,57,43,0.25);
+  border-left-color: #c0392b;
+  color: white;
+  font-weight: 700;
+}
+.sb-item.disabled { color: #4a6278; cursor: default; }
+.sb-item.disabled:hover { background: none; }
+.sb-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.sb-badge {
+  margin-left: auto;
+  font-size: 9px;
+  background: #3d566e;
+  padding: 1px 5px;
+  border-radius: 2px;
+  color: #7f8c8d;
+}
+
+/* ワークスペース */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+/* プロパティバー（物件情報） */
+.property-bar {
+  background: white;
+  border-bottom: 1px solid #ccc;
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+.prop-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: #c0392b;
+  margin-bottom: 7px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.prop-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+.pf { display: flex; flex-direction: column; gap: 2px; }
+.pf label {
+  font-size: 10px;
+  color: #666;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pf input {
+  height: 24px;
+  border: 1px solid #ccc;
+  padding: 0 6px;
+  font-size: 12px;
+  font-family: inherit;
+  border-radius: 2px;
+  width: 160px;
+}
+.pf.w80 input { width: 80px; }
+.pf.w120 input { width: 120px; }
+.pf.w220 input { width: 220px; }
+.pf input:focus { outline: none; border-color: #c0392b; }
+.date-inline { display: flex; align-items: flex-end; gap: 3px; }
+.date-inline span { font-size: 11px; padding-bottom: 4px; }
+.date-inline input { width: 42px !important; text-align: center; }
+
+/* グリッドエリア */
+.grid-wrap {
+  flex: 1;
+  overflow: auto;
+  background: #f0f0f0;
+  padding: 8px;
+}
+
+table.grid {
+  border-collapse: collapse;
+  font-size: 12px;
+  width: 100%;
+  table-layout: fixed;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+table.grid colgroup col {}
+table.grid thead th {
+  background: #34495e;
+  color: white;
+  padding: 5px 3px;
+  text-align: center;
+  border: 1px solid #2c3e50;
+  font-size: 10px;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  font-weight: 600;
+}
+table.grid thead th.sub-hd { background: #2c3e50; font-size: 9px; }
+table.grid thead th.red { background: #c0392b; }
+table.grid td {
+  border: 1px solid #ddd;
+  padding: 0;
+  vertical-align: middle;
+  height: 30px;
+}
+table.grid tr:nth-child(even) td { background: #f7f9fc; }
+table.grid tr:hover td { background: #fff3f3 !important; }
+table.grid td.rn {
+  background: #ecf0f1 !important;
+  text-align: center;
+  font-size: 11px;
+  color: #888;
+  width: 30px;
+  cursor: default;
+}
+table.grid td input,
+table.grid td select {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  padding: 0 5px;
+  font-size: 12px;
+  font-family: inherit;
+  background: transparent;
+  min-height: 28px;
+  line-height: 28px;
+}
+table.grid td input:focus,
+table.grid td select:focus {
+  outline: 2px solid #c0392b;
+  outline-offset: -2px;
+  background: #fff8f8;
+}
+table.grid td.j-ok { background: #eafaf1 !important; }
+table.grid td.j-ng { background: #fdf2f2 !important; }
+table.grid td.j-ok select { color: #27ae60; font-weight: 700; }
+table.grid td.j-ng select { color: #c0392b; font-weight: 700; }
+
+/* グリッド下部ボタン */
+.grid-footer {
+  background: white;
+  border-top: 1px solid #ddd;
+  padding: 5px 8px;
+  display: flex;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.add-btn {
+  height: 26px;
+  padding: 0 12px;
+  background: white;
+  border: 1px dashed #aaa;
+  border-radius: 2px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  color: #555;
+}
+.add-btn:hover { border-color: #c0392b; color: #c0392b; background: #fff8f8; }
+.del-btn {
+  height: 26px;
+  padding: 0 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  color: #888;
+}
+.del-btn:hover { border-color: #c0392b; color: #c0392b; }
+.row-count { font-size: 11px; color: #888; display: flex; align-items: center; margin-left: auto; }
+
+/* ステータスバー */
+.statusbar {
+  height: 22px;
+  background: #e0e0e0;
+  border-top: 1px solid #bbb;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  color: #555;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.statusbar .sb-ok { color: #27ae60; font-weight: 700; }
+.statusbar .sb-ng { color: #c0392b; font-weight: 700; }
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  .sidebar { width: 0; overflow: hidden; }
+  .pf input { width: 120px; }
+  .pf.w220 input { width: 160px; }
+}
 </style>
 </head>
 <body>
-<div class="top-bar">
+
+<!-- タイトルバー -->
+<div class="titlebar">
   <span class="icon">🔥</span>
-  <h1>消防設備点検システム</h1>
-  <span class="sub">消火器具 機器点検票</span>
+  <span class="app-name">消防設備点検システム</span>
+  <span class="form-badge">消火器具 機器点検票</span>
+  <span class="spacer"></span>
+  <span class="ver">PSL v1.0</span>
 </div>
 
-<div class="container">
-<form method="POST" action="/preview" id="mainForm">
-  <input type="hidden" name="count" id="countInput" value="1">
-
-  <div class="card">
-    <div class="card-title">点検基本情報</div>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>点検年月日</label>
-        <div class="date-row">
-          <span>令和</span>
-          <input type="number" name="date_y" min="1" max="99" placeholder="7" style="width:55px">
-          <span>年</span>
-          <input type="number" name="date_m" min="1" max="12" placeholder="6" style="width:50px">
-          <span>月</span>
-          <input type="number" name="date_d" min="1" max="31" placeholder="1" style="width:50px">
-          <span>日</span>
-        </div>
-      </div>
-      <div class="form-group full">
-        <label>防火対象物名称</label>
-        <input type="text" name="building_name" placeholder="例）〇〇ビル・△△アパート">
-      </div>
-      <div class="form-group full">
-        <label>所在地</label>
-        <input type="text" name="address" placeholder="例）東京都渋谷区〇〇1-2-3">
-      </div>
-      <div class="form-group">
-        <label>関係者（管理者）</label>
-        <input type="text" name="owner" placeholder="氏名または法人名">
-      </div>
-      <div class="form-group">
-        <label>点検者氏名</label>
-        <input type="text" name="inspector_name" placeholder="消防設備士 氏名">
-      </div>
-      <div class="form-group">
-        <label>消防設備士免状番号</label>
-        <input type="text" name="inspector_num" placeholder="例）第123456号">
-      </div>
-      <div class="form-group">
-        <label>点検対象期間</label>
-        <div class="date-row" style="flex-wrap:wrap;gap:4px;">
-          <input type="text" name="period_from" placeholder="例）R6.12.1" style="width:110px">
-          <span>〜</span>
-          <input type="text" name="period_to" placeholder="例）R7.5.31" style="width:110px">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">消火器 点検一覧</div>
-    <div class="count-control">
-      <span style="font-size:13px;color:#555;">消火器の本数：</span>
-      <button type="button" onclick="changeCount(-1)">−</button>
-      <span id="countDisplay">1</span>
-      <button type="button" onclick="changeCount(1)">＋</button>
-      <span style="font-size:13px;color:#555;">本</span>
-    </div>
-
-    <div class="extinguisher-section" id="extList">
-      <!-- JS で生成 -->
-    </div>
-  </div>
-
-  <button type="submit" class="submit-btn">点検票を作成する →</button>
-</form>
+<!-- ツールバー -->
+<div class="toolbar">
+  <button class="tb-btn" onclick="clearAll()">📄 新規</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="addRow()">＋ 行追加</button>
+  <button class="tb-btn" onclick="deleteLastRow()">－ 最終行削除</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn primary" id="previewBtn">🖨 点検票を作成する</button>
 </div>
+
+<!-- メインレイアウト -->
+<div class="main-layout">
+
+  <!-- サイドバー -->
+  <div class="sidebar">
+    <div class="sb-section">消火器具</div>
+    <div class="sb-item active"><span class="sb-dot"></span>機器点検</div>
+    <div class="sb-item disabled"><span class="sb-dot"></span>総合点検 <span class="sb-badge">準備中</span></div>
+
+    <div class="sb-section" style="margin-top:8px">自動火災報知設備</div>
+    <div class="sb-item disabled"><span class="sb-dot"></span>機器点検 <span class="sb-badge">準備中</span></div>
+    <div class="sb-item disabled"><span class="sb-dot"></span>総合点検 <span class="sb-badge">準備中</span></div>
+
+    <div class="sb-section" style="margin-top:8px">誘導灯</div>
+    <div class="sb-item disabled"><span class="sb-dot"></span>機器点検 <span class="sb-badge">準備中</span></div>
+
+    <div class="sb-section" style="margin-top:8px">避難器具</div>
+    <div class="sb-item disabled"><span class="sb-dot"></span>機器点検 <span class="sb-badge">準備中</span></div>
+
+    <div class="sb-section" style="margin-top:8px">スプリンクラー</div>
+    <div class="sb-item disabled"><span class="sb-dot"></span>機器点検 <span class="sb-badge">準備中</span></div>
+  </div>
+
+  <!-- ワークスペース -->
+  <div class="workspace">
+
+    <!-- プロパティバー -->
+    <div class="property-bar">
+      <div class="prop-title">▶ 点検対象物・点検者情報</div>
+      <div class="prop-row">
+        <div class="pf">
+          <label>点検年月日</label>
+          <div class="date-inline">
+            <span>令和</span>
+            <input type="number" id="date_y" min="1" max="99" placeholder="7" style="width:42px">
+            <span>年</span>
+            <input type="number" id="date_m" min="1" max="12" placeholder="6" style="width:38px">
+            <span>月</span>
+            <input type="number" id="date_d" min="1" max="31" placeholder="1" style="width:38px">
+            <span>日</span>
+          </div>
+        </div>
+        <div class="pf w220">
+          <label>防火対象物名称</label>
+          <input type="text" id="building_name" placeholder="例）〇〇ビル">
+        </div>
+        <div class="pf w220">
+          <label>所在地</label>
+          <input type="text" id="address" placeholder="例）東京都渋谷区〇〇1-2-3">
+        </div>
+        <div class="pf w120">
+          <label>関係者（管理者）</label>
+          <input type="text" id="owner" placeholder="氏名 or 法人名">
+        </div>
+        <div class="pf w120">
+          <label>点検者氏名</label>
+          <input type="text" id="inspector_name" placeholder="消防設備士 氏名">
+        </div>
+        <div class="pf w120">
+          <label>免状番号</label>
+          <input type="text" id="inspector_num" placeholder="第12345号">
+        </div>
+        <div class="pf">
+          <label>点検対象期間</label>
+          <div class="date-inline">
+            <input type="text" id="period_from" placeholder="R6.12.1" style="width:80px">
+            <span>〜</span>
+            <input type="text" id="period_to" placeholder="R7.5.31" style="width:80px">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- グリッド -->
+    <div class="grid-wrap" id="gridWrap">
+      <table class="grid" id="grid">
+        <colgroup>
+          <col style="width:30px">
+          <col style="width:100px">
+          <col style="width:90px">
+          <col style="width:68px">
+          <col style="width:55px">
+          <col style="width:58px">
+          <col style="width:66px">
+          <col style="width:58px">
+          <col style="width:52px">
+          <col style="width:72px">
+          <col style="width:70px">
+          <col style="width:46px">
+          <col style="width:auto">
+        </colgroup>
+        <thead>
+          <tr>
+            <th rowspan="2">No</th>
+            <th rowspan="2">設置場所</th>
+            <th rowspan="2">種　別</th>
+            <th rowspan="2">能力単位</th>
+            <th rowspan="2">製造年</th>
+            <th colspan="5" style="background:#3d566e">外形等の点検</th>
+            <th rowspan="2">指示圧力値<br>(MPa)</th>
+            <th rowspan="2" class="red">判定</th>
+            <th rowspan="2">備　考</th>
+          </tr>
+          <tr>
+            <th class="sub-hd">外形</th>
+            <th class="sub-hd">安全栓・封板</th>
+            <th class="sub-hd">本体容器</th>
+            <th class="sub-hd">キャップ</th>
+            <th class="sub-hd">ホース・ノズル</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- グリッドフッター -->
+    <div class="grid-footer">
+      <button class="add-btn" onclick="addRow()">＋ 行を追加</button>
+      <button class="del-btn" onclick="deleteLastRow()">− 最終行削除</button>
+      <div class="row-count" id="rowCount">0 行</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ステータスバー -->
+<div class="statusbar">
+  <span>消火器具 機器点検票</span>
+  <span>適：<span class="sb-ok" id="okCount">0</span>　否：<span class="sb-ng" id="ngCount">0</span></span>
+  <span id="statusMsg">入力後「点検票を作成する」ボタンを押してください</span>
+</div>
+
+<!-- 非表示フォーム（送信用） -->
+<form id="submitForm" method="POST" action="/preview" style="display:none"></form>
 
 <script>
-const types = {{ extinguisher_types | tojson }};
-const locations = {{ locations | tojson }};
-let count = 1;
+const TYPES = {{ extinguisher_types | tojson }};
+const CHECK = {{ check_options | tojson }};
 
-function changeCount(delta) {
-  count = Math.max(1, Math.min(20, count + delta));
-  document.getElementById("countDisplay").textContent = count;
-  document.getElementById("countInput").value = count;
-  renderList();
+let rowCount = 0;
+
+function makeSelect(name, options, cls) {
+  let s = `<select name="${name}" onchange="onCellChange(this)">`;
+  options.forEach(o => s += `<option>${o}</option>`);
+  s += '</select>';
+  return s;
 }
 
-function renderList() {
-  const container = document.getElementById("extList");
-  container.innerHTML = "";
-  for (let i = 1; i <= count; i++) {
-    container.innerHTML += `
-    <div class="ext-card">
-      <div class="ext-num">No. ${i}</div>
-      <div class="form-grid triple">
-        <div class="form-group">
-          <label>設置場所</label>
-          <select name="location_${i}">
-            ${locations.map(l => `<option>${l}</option>`).join("")}
-            <option value="その他">その他</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>種別</label>
-          <select name="type_${i}">
-            ${types.map(t => `<option>${t}</option>`).join("")}
-          </select>
-        </div>
-        <div class="form-group">
-          <label>能力単位</label>
-          <input type="text" name="capacity_${i}" placeholder="例）ABC-3">
-        </div>
-        <div class="form-group">
-          <label>製造年</label>
-          <input type="text" name="year_${i}" placeholder="例）2018">
-        </div>
-        <div class="form-group">
-          <label>指示圧力値（MPa）</label>
-          <input type="text" name="pressure_${i}" placeholder="例）0.85">
-        </div>
-        <div class="form-group">
-          <label>判定</label>
-          <select name="judgment_${i}" onchange="this.parentElement.className='form-group '+(this.value==='適'?'judgment-ok':'judgment-ng')">
-            <option value="適">適</option>
-            <option value="否">否</option>
-          </select>
-        </div>
-      </div>
-      <div class="check-row">
-        <div class="check-group form-group">
-          <label>外形</label>
-          <select name="outer_${i}">
-            <option>正常</option><option>変形</option><option>腐食</option><option>損傷</option>
-          </select>
-        </div>
-        <div class="check-group form-group">
-          <label>安全栓・封板</label>
-          <select name="safety_pin_${i}">
-            <option>正常</option><option>脱落</option><option>変形</option><option>破れ</option>
-          </select>
-        </div>
-        <div class="check-group form-group">
-          <label>本体容器</label>
-          <select name="body_${i}">
-            <option>正常</option><option>変形</option><option>腐食</option><option>損傷</option>
-          </select>
-        </div>
-        <div class="check-group form-group">
-          <label>キャップ</label>
-          <select name="cap_${i}">
-            <option>正常</option><option>変形</option><option>腐食</option>
-          </select>
-        </div>
-        <div class="check-group form-group">
-          <label>ホース・ノズル</label>
-          <select name="hose_${i}">
-            <option>正常</option><option>変形</option><option>詰まり</option><option>損傷</option>
-          </select>
-        </div>
-        <div class="check-group form-group">
-          <label>備考</label>
-          <input type="text" name="note_${i}" placeholder="特記事項">
-        </div>
-      </div>
-    </div>`;
+function makeJudgmentSelect(name) {
+  return `<select name="${name}" onchange="onJudgment(this)">
+    <option value="適">適</option>
+    <option value="否">否</option>
+  </select>`;
+}
+
+function addRow() {
+  rowCount++;
+  const n = rowCount;
+  const tr = document.createElement('tr');
+  tr.id = `row_${n}`;
+  tr.innerHTML = `
+    <td class="rn">${n}</td>
+    <td><input type="text" name="location_${n}" placeholder="例）1F廊下"></td>
+    <td>${makeSelect(`type_${n}`, TYPES)}</td>
+    <td><input type="text" name="capacity_${n}" placeholder="ABC-3"></td>
+    <td><input type="text" name="year_${n}" placeholder="2020"></td>
+    <td>${makeSelect(`outer_${n}`, CHECK.outer)}</td>
+    <td>${makeSelect(`safety_pin_${n}`, CHECK.safety_pin)}</td>
+    <td>${makeSelect(`body_${n}`, CHECK.body)}</td>
+    <td>${makeSelect(`cap_${n}`, CHECK.cap)}</td>
+    <td>${makeSelect(`hose_${n}`, CHECK.hose)}</td>
+    <td><input type="text" name="pressure_${n}" placeholder="0.85"></td>
+    <td class="j-ok" id="jcell_${n}">${makeJudgmentSelect(`judgment_${n}`)}</td>
+    <td><input type="text" name="note_${n}"></td>
+  `;
+  document.getElementById('tbody').appendChild(tr);
+  updateStatus();
+}
+
+function deleteLastRow() {
+  if (rowCount === 0) return;
+  const row = document.getElementById(`row_${rowCount}`);
+  if (row) row.remove();
+  rowCount--;
+  updateStatus();
+}
+
+function onJudgment(sel) {
+  const n = sel.name.replace('judgment_', '');
+  const cell = document.getElementById(`jcell_${n}`);
+  cell.className = sel.value === '適' ? 'j-ok' : 'j-ng';
+  updateStatus();
+}
+
+function onCellChange(el) {
+  updateStatus();
+}
+
+function updateStatus() {
+  document.getElementById('rowCount').textContent = rowCount + ' 行';
+  let ok = 0, ng = 0;
+  for (let i = 1; i <= rowCount; i++) {
+    const sel = document.querySelector(`[name="judgment_${i}"]`);
+    if (sel) { sel.value === '適' ? ok++ : ng++; }
   }
+  document.getElementById('okCount').textContent = ok;
+  document.getElementById('ngCount').textContent = ng;
 }
 
-renderList();
+function clearAll() {
+  if (rowCount > 0 && !confirm('入力内容をすべてクリアしますか？')) return;
+  document.getElementById('tbody').innerHTML = '';
+  rowCount = 0;
+  ['date_y','date_m','date_d','building_name','address','owner','inspector_name','inspector_num','period_from','period_to']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  updateStatus();
+}
+
+document.getElementById('previewBtn').addEventListener('click', function() {
+  if (rowCount === 0) {
+    alert('消火器を1本以上入力してください。');
+    return;
+  }
+  const form = document.getElementById('submitForm');
+  form.innerHTML = '';
+  const addHidden = (name, value) => {
+    const inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = name;
+    inp.value = value || '';
+    form.appendChild(inp);
+  };
+  addHidden('count', rowCount);
+  ['date_y','date_m','date_d','building_name','address','owner','inspector_name','inspector_num','period_from','period_to']
+    .forEach(id => addHidden(id, document.getElementById(id)?.value || ''));
+
+  for (let i = 1; i <= rowCount; i++) {
+    ['location','type','capacity','year','outer','safety_pin','body','cap','hose','pressure','judgment','note']
+      .forEach(field => {
+        const el = document.querySelector(`[name="${field}_${i}"]`);
+        addHidden(`${field}_${i}`, el ? el.value : '');
+      });
+  }
+  form.submit();
+});
+
+// 初期1行
+addRow();
 </script>
 </body>
 </html>

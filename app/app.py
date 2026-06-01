@@ -1,6 +1,5 @@
-from flask import Flask, render_template, request, session, redirect, url_for
-import os, json
-from datetime import datetime
+from flask import Flask, render_template, request
+import os
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "demo-secret-key-2026")
@@ -10,53 +9,61 @@ EXTINGUISHER_TYPES = [
     "機械泡型", "CO2型", "ハロン型", "水型"
 ]
 
-LOCATIONS = [
-    "1F エントランス", "1F 廊下", "2F 廊下", "3F 廊下",
-    "厨房", "事務室", "会議室", "駐車場", "その他"
-]
+CHECK_OPTIONS = {
+    "outer":      ["正常", "変形", "腐食", "損傷"],
+    "safety_pin": ["正常", "脱落", "変形", "破れ"],
+    "seal":       ["正常", "破れ", "欠"],
+    "body":       ["正常", "変形", "腐食", "損傷"],
+    "cap":        ["正常", "変形", "腐食"],
+    "hose":       ["正常", "変形", "詰まり", "損傷"],
+}
 
 @app.route("/")
 def index():
     return render_template("index.html",
         extinguisher_types=EXTINGUISHER_TYPES,
-        locations=LOCATIONS
+        check_options=CHECK_OPTIONS,
     )
 
 @app.route("/preview", methods=["POST"])
 def preview():
     form = request.form
-    count = int(form.get("count", 1))
+    try:
+        count = max(0, int(form.get("count", 1)))
+    except (ValueError, TypeError):
+        count = 1
 
     header = {
-        "date_y": form.get("date_y", ""),
-        "date_m": form.get("date_m", ""),
-        "date_d": form.get("date_d", ""),
+        "date_y":        form.get("date_y", ""),
+        "date_m":        form.get("date_m", ""),
+        "date_d":        form.get("date_d", ""),
         "building_name": form.get("building_name", ""),
-        "address": form.get("address", ""),
-        "owner": form.get("owner", ""),
-        "inspector_name": form.get("inspector_name", ""),
+        "address":       form.get("address", ""),
+        "owner":         form.get("owner", ""),
+        "inspector_name":form.get("inspector_name", ""),
         "inspector_num": form.get("inspector_num", ""),
-        "period_from": form.get("period_from", ""),
-        "period_to": form.get("period_to", ""),
+        "period_from":   form.get("period_from", ""),
+        "period_to":     form.get("period_to", ""),
     }
 
     items = []
     for i in range(1, count + 1):
+        judgment = form.get(f"judgment_{i}", "適")
         items.append({
-            "no": i,
-            "location": form.get(f"location_{i}", ""),
-            "type": form.get(f"type_{i}", ""),
-            "capacity": form.get(f"capacity_{i}", ""),
-            "year": form.get(f"year_{i}", ""),
-            "outer": form.get(f"outer_{i}", "正常"),
+            "no":         i,
+            "location":   form.get(f"location_{i}", ""),
+            "type":       form.get(f"type_{i}", ""),
+            "capacity":   form.get(f"capacity_{i}", ""),
+            "year":       form.get(f"year_{i}", ""),
+            "outer":      form.get(f"outer_{i}", "正常"),
             "safety_pin": form.get(f"safety_pin_{i}", "正常"),
-            "seal": form.get(f"seal_{i}", "正常"),
-            "body": form.get(f"body_{i}", "正常"),
-            "cap": form.get(f"cap_{i}", "正常"),
-            "hose": form.get(f"hose_{i}", "正常"),
-            "pressure": form.get(f"pressure_{i}", ""),
-            "judgment": form.get(f"judgment_{i}", "適"),
-            "note": form.get(f"note_{i}", ""),
+            "body":       form.get(f"body_{i}", "正常"),
+            "cap":        form.get(f"cap_{i}", "正常"),
+            "hose":       form.get(f"hose_{i}", "正常"),
+            "pressure":   form.get(f"pressure_{i}", ""),
+            "judgment":   judgment,
+            "note":       form.get(f"note_{i}", ""),
+            "is_ok":      judgment == "適",
         })
 
     return render_template("report.html", header=header, items=items)
