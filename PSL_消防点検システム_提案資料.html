@@ -199,6 +199,16 @@ footer p { font-size: 12px; opacity: 0.6; line-height: 1.8; }
   nav .nav-links { display: none; }
   .price-card { padding: 24px 20px; }
   .price-main { font-size: 40px; }
+  section { padding: 56px 16px; }
+  /* プラン2列→1列 */
+  div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  /* 比較テーブル スマホ対応 */
+  table.comp { font-size: 11px; }
+  table.comp th, table.comp td { padding: 10px 8px; }
+  table.comp td:first-child { font-size: 11px; }
+  .step { flex-direction: column; gap: 12px; }
+  .hero h1 { font-size: 26px; }
+  .hero-sub { font-size: 14px; }
 }
 </style>
 </head>
@@ -467,7 +477,7 @@ footer p { font-size: 12px; opacity: 0.6; line-height: 1.8; }
         <tr>
           <td>初期費用</td>
           <td class="psl-col" style="font-weight:700;color:var(--red)">¥500,000（買い切り）</td>
-          <td>¥1,000,000前後</td>
+          <td>¥730,000〜（導入セット実売価格）</td>
         </tr>
       </tbody>
     </table>
@@ -479,24 +489,65 @@ footer p { font-size: 12px; opacity: 0.6; line-height: 1.8; }
   <div class="container">
     <div class="section-tag">PRICING</div>
     <h2>料金体系</h2>
-    <p class="lead">月額ゼロ。一度の投資で永続的に使えます。</p>
-    <div class="price-card">
-      <div class="type">買い切りプラン（スタートアップ特別価格）</div>
-      <div class="price-main"><span>¥</span>500,000<span style="font-size:16px">（税別）</span></div>
-      <div class="price-sub">月額費用なし。追加ライセンス料なし。永続利用。<br>打ち直し作業が月20時間減れば、1年で元が取れます。</div>
-      <ul class="price-list">
-        <li><span class="ok">✓</span> 物件ダッシュボード</li>
-        <li><span class="ok">✓</span> スマホ・タブレット対応点検入力</li>
-        <li><span class="ok">✓</span> 消防庁告示様式準拠 点検票出力</li>
-        <li><span class="ok">✓</span> オーナー向け共有URL機能</li>
-        <li><span class="ok">✓</span> 点検期限自動管理（6ヶ月後設定）</li>
-        <li><span class="ok">✓</span> 初期設定・導入サポート（1回）</li>
-        <li><span class="ok">✓</span> ご指定の書式に対応（最大20書式）</li>
-        <li><span class="no">－</span> 法改正に伴う書式更新（別途¥1〜3万/式）</li>
-        <li><span class="no">－</span> 継続保守・バグ修正（別途年間保守プランあり）</li>
-      </ul>
-      <div class="price-note">※ 消防署への提出用完全準拠版として納品します<br>※ 対象書式は契約前にご確認ください</div>
+    <p class="lead">規模に合わせて2プランから選べます。どちらも月額0円〜スタートできます。</p>
+
+    <!-- プランカード2列 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:800px;margin:0 auto 16px;">
+
+      <!-- 買い切り -->
+      <div class="price-card" style="margin:0;">
+        <div class="type">買い切りプラン</div>
+        <div class="price-main"><span>¥</span>500,000<span style="font-size:16px">（税別）</span></div>
+        <div class="price-sub">初期費用のみ。月額ゼロ。永続利用。<br>打ち直し作業が月20時間減れば、1年で元が取れます。</div>
+        <ul class="price-list">
+          <li><span class="ok">✓</span> 物件ダッシュボード</li>
+          <li><span class="ok">✓</span> スマホ・タブレット対応点検入力</li>
+          <li><span class="ok">✓</span> 消防庁告示様式準拠 点検票出力</li>
+          <li><span class="ok">✓</span> オーナー向け共有URL機能</li>
+          <li><span class="ok">✓</span> 点検期限自動管理</li>
+          <li><span class="ok">✓</span> 初期設定・導入サポート（1回）</li>
+          <li><span class="ok">✓</span> ご指定の書式に対応（最大20書式）</li>
+          <li><span class="no">－</span> 法改正書式更新（別途¥1〜3万/式）</li>
+          <li><span class="no">－</span> 継続保守（別途年間保守プランあり）</li>
+        </ul>
+        <div class="price-note">※ 消防署提出用完全準拠版として納品</div>
+      </div>
+
+      <!-- 月額 -->
+      <div class="price-card" style="margin:0;border-color:#27ae60;">
+        <div class="type" style="color:#27ae60;">月額プラン（サブスクリプション）</div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;align-items:baseline;gap:6px;justify-content:center;margin-bottom:4px;">
+            <span style="font-size:13px;color:#888">Lite（〜30物件）</span>
+            <span style="font-size:28px;font-weight:900;color:var(--dark)">¥4,980</span>
+            <span style="font-size:13px;color:#888">/月</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:6px;justify-content:center;margin-bottom:4px;">
+            <span style="font-size:13px;color:#888">Standard（〜100物件）</span>
+            <span style="font-size:28px;font-weight:900;color:var(--dark)">¥9,800</span>
+            <span style="font-size:13px;color:#888">/月</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:6px;justify-content:center;">
+            <span style="font-size:13px;color:#888">Pro（無制限）</span>
+            <span style="font-size:28px;font-weight:900;color:var(--dark)">¥24,800</span>
+            <span style="font-size:13px;color:#888">/月</span>
+          </div>
+        </div>
+        <ul class="price-list">
+          <li><span class="ok">✓</span> 買い切りと同等の全機能</li>
+          <li><span class="ok">✓</span> 法改正書式更新を含む</li>
+          <li><span class="ok">✓</span> 継続保守・バグ修正込み</li>
+          <li><span class="ok">✓</span> 初期費用なし</li>
+          <li><span class="ok">✓</span> いつでも解約可能</li>
+          <li><span class="ok">✓</span> 書式は順次追加対応</li>
+        </ul>
+        <div class="price-note">※ 月額はすべて税別<br>※ 初回1ヶ月無料トライアルあり（準備中）</div>
+      </div>
     </div>
+
+    <p style="text-align:center;font-size:12px;color:#999;max-width:800px;margin:0 auto;">
+      ※ 買い切りとStandardプランの損益分岐点は約51ヶ月（約4年3ヶ月）。長期利用なら買い切り、まず試したいなら月額がお得です。
+    </p>
   </div>
 </section>
 
