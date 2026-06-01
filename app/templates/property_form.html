@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>物件登録 | 消防点検システム</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; min-height: 100vh; }
+.topbar {
+  background: #c0392b; color: white; height: 52px;
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+}
+.topbar a { color: white; text-decoration: none; font-size: 13px; opacity: 0.8; }
+.topbar a:hover { opacity: 1; }
+.topbar .title { font-size: 15px; font-weight: 700; }
+.container { max-width: 600px; margin: 32px auto; padding: 0 16px; }
+.card { background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 28px; }
+.card-title { font-size: 16px; font-weight: 700; margin-bottom: 22px; color: #2c3e50; }
+.fg { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+label { font-size: 12px; font-weight: 600; color: #666; }
+input {
+  height: 40px; border: 1px solid #ddd; border-radius: 6px;
+  padding: 0 12px; font-size: 14px; font-family: inherit;
+}
+input:focus { outline: none; border-color: #c0392b; }
+.hint { font-size: 11px; color: #aaa; }
+.btn-row { display: flex; gap: 10px; margin-top: 24px; }
+.btn-submit {
+  flex: 1; height: 44px; background: #c0392b; color: white; border: none;
+  border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.btn-submit:hover { background: #a93226; }
+.btn-cancel {
+  height: 44px; padding: 0 20px; background: white; color: #555;
+  border: 1px solid #ddd; border-radius: 6px; font-size: 14px; cursor: pointer;
+  text-decoration: none; display: flex; align-items: center;
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="/">← 戻る</a>
+  <span class="title">物件を追加</span>
+</div>
+<div class="container">
+  <div class="card">
+    <div class="card-title">🏢 新規物件登録</div>
+    <form method="POST">
+      <div class="fg">
+        <label>物件名称 *</label>
+        <input type="text" name="name" placeholder="例）渋谷第二ビル" required>
+      </div>
+      <div class="fg">
+        <label>所在地</label>
+        <input type="text" name="address" placeholder="例）東京都渋谷区〇〇1-2-3">
+      </div>
+      <div class="fg">
+        <label>管理者・オーナー名</label>
+        <input type="text" name="owner_name" placeholder="例）田中商事株式会社">
+      </div>
+      <div class="fg">
+        <label>オーナー連絡先（メールまたは電話）</label>
+        <input type="text" name="owner_contact" placeholder="例）owner@example.com">
+        <span class="hint">点検票の共有URLをここに送付します</span>
+      </div>
+      <div class="fg">
+        <label>次回点検予定日</label>
+        <input type="date" name="next_inspection">
+        <span class="hint">入力しなくても点検完了時に自動で6ヶ月後に設定されます</span>
+      </div>
+      <div class="btn-row">
+        <a href="/" class="btn-cancel">キャンセル</a>
+        <button type="submit" class="btn-submit">登録する</button>
+      </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

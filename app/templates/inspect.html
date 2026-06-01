@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>点検入力 | {{ prop['name'] }}</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; }
+
+.topbar {
+  background: #c0392b; color: white; padding: 0 16px; height: 52px;
+  display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.topbar a { color: white; text-decoration: none; font-size: 13px; opacity: 0.8; }
+.topbar .prop-name { font-size: 14px; font-weight: 700; flex: 1; }
+.count-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
+}
+
+.container { max-width: 900px; margin: 0 auto; padding: 16px; padding-bottom: 100px; }
+
+/* 点検者情報 */
+.info-card {
+  background: white; border-radius: 10px; padding: 16px 18px;
+  margin-bottom: 14px; box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.info-card-title {
+  font-size: 12px; font-weight: 700; color: #c0392b;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;
+}
+.info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.fg { display: flex; flex-direction: column; gap: 3px; }
+.fg label { font-size: 11px; font-weight: 600; color: #777; }
+.fg input {
+  height: 36px; border: 1px solid #ddd; border-radius: 5px;
+  padding: 0 10px; font-size: 13px; font-family: inherit;
+}
+.fg input:focus { outline: none; border-color: #c0392b; }
+.fg.full { grid-column: 1 / -1; }
+
+/* 消火器カード（モバイル対応） */
+.ext-section-title {
+  font-size: 14px; font-weight: 700; color: #2c3e50; margin: 16px 0 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.add-btn {
+  background: white; border: 1.5px dashed #c0392b; color: #c0392b;
+  padding: 6px 14px; border-radius: 5px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+}
+.add-btn:hover { background: #fff0ef; }
+
+.ext-card {
+  background: white; border-radius: 10px; margin-bottom: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+.ext-card-hd {
+  background: #2c3e50; color: white; padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.ext-num { font-size: 15px; font-weight: 700; }
+.ext-del {
+  margin-left: auto; background: rgba(255,255,255,0.15); border: none;
+  color: white; padding: 3px 10px; border-radius: 3px; cursor: pointer;
+  font-size: 12px; font-family: inherit;
+}
+.ext-del:hover { background: rgba(255,0,0,0.3); }
+.ext-body { padding: 14px 16px; }
+.ext-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ext-grid.tri { grid-template-columns: 1fr 1fr 1fr; }
+
+/* セレクトボタン（モバイル最適化） */
+.check-group { display: flex; flex-direction: column; gap: 4px; }
+.check-group label { font-size: 11px; font-weight: 600; color: #777; }
+select.check-sel {
+  height: 38px; border: 1px solid #ddd; border-radius: 5px;
+  padding: 0 8px; font-size: 13px; font-family: inherit; background: white;
+  -webkit-appearance: auto;
+}
+select.check-sel:focus { outline: none; border-color: #c0392b; }
+select.judgment-sel {
+  height: 42px; font-size: 15px; font-weight: 700; text-align: center;
+  border-width: 2px;
+}
+select.judgment-sel.ok { border-color: #27ae60; color: #27ae60; background: #eafaf1; }
+select.judgment-sel.ng { border-color: #c0392b; color: #c0392b; background: #fdf2f2; }
+
+input.check-input {
+  height: 38px; border: 1px solid #ddd; border-radius: 5px;
+  padding: 0 10px; font-size: 13px; font-family: inherit; width: 100%;
+}
+input.check-input:focus { outline: none; border-color: #c0392b; }
+
+.note-input {
+  width: 100%; height: 36px; border: 1px solid #ddd; border-radius: 5px;
+  padding: 0 10px; font-size: 13px; font-family: inherit;
+}
+.note-input:focus { outline: none; border-color: #c0392b; }
+.full-w { grid-column: 1 / -1; }
+
+/* 固定送信ボタン */
+.submit-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: white; border-top: 1px solid #ddd;
+  padding: 12px 16px; box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+  display: flex; gap: 10px; align-items: center; z-index: 200;
+}
+.submit-btn {
+  flex: 1; height: 48px; background: #c0392b; color: white; border: none;
+  border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit;
+}
+.submit-btn:hover { background: #a93226; }
+.submit-sub { font-size: 11px; color: #aaa; }
+.ext-count { font-size: 13px; font-weight: 700; color: #2c3e50; }
+
+@media (max-width: 600px) {
+  .info-grid { grid-template-columns: 1fr 1fr; }
+  .ext-grid.tri { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/">← 戻る</a>
+  <span class="prop-name">{{ prop['name'] }}</span>
+  <span class="count-badge" id="topCount">1 本</span>
+</div>
+
+<div class="container">
+  <form method="POST" id="mainForm">
+    <input type="hidden" name="count" id="countInput" value="1">
+
+    <!-- 点検者情報 -->
+    <div class="info-card">
+      <div class="info-card-title">▶ 点検情報</div>
+      <div class="info-grid">
+        <div class="fg">
+          <label>点検実施日</label>
+          <input type="date" name="inspected_at" id="inspected_at">
+        </div>
+        <div class="fg">
+          <label>点検者氏名</label>
+          <input type="text" name="inspector_name" placeholder="消防設備士 氏名">
+        </div>
+        <div class="fg">
+          <label>免状番号</label>
+          <input type="text" name="inspector_num" placeholder="第12345号">
+        </div>
+        <div class="fg">
+          <label>点検対象期間（開始）</label>
+          <input type="text" name="period_from" placeholder="例）R6.12.1">
+        </div>
+        <div class="fg">
+          <label>点検対象期間（終了）</label>
+          <input type="text" name="period_to" placeholder="例）R7.5.31">
+        </div>
+      </div>
+    </div>
+
+    <!-- 消火器リスト -->
+    <div class="ext-section-title">
+      <span>消火器 点検一覧</span>
+      <button type="button" class="add-btn" onclick="addCard()">＋ 1本追加</button>
+    </div>
+
+    <div id="extList"></div>
+
+  </form>
+</div>
+
+<!-- 送信バー -->
+<div class="submit-bar">
+  <div>
+    <div class="ext-count" id="bottomCount">1 本</div>
+    <div class="submit-sub">入力完了後に送信</div>
+  </div>
+  <button type="button" class="submit-btn" onclick="submitForm()">点検票を作成 →</button>
+</div>
+
+<script>
+const TYPES = {{ extinguisher_types | tojson }};
+const CHECK = {{ check_options | tojson }};
+let count = 0;
+
+function sel(name, opts, cls) {
+  let s = `<select name="${name}" class="check-sel ${cls||''}" onchange="onChg(this)">`;
+  opts.forEach(o => s += `<option>${o}</option>`);
+  return s + '</select>';
+}
+
+function addCard() {
+  count++;
+  const n = count;
+  const div = document.createElement('div');
+  div.className = 'ext-card';
+  div.id = `card_${n}`;
+  div.innerHTML = `
+    <div class="ext-card-hd">
+      <span class="ext-num">No.${n}</span>
+      <button type="button" class="ext-del" onclick="delCard(${n})">削除</button>
+    </div>
+    <div class="ext-body">
+      <div class="ext-grid tri" style="margin-bottom:10px">
+        <div class="check-group">
+          <label>設置場所</label>
+          <input type="text" name="location_${n}" class="check-input" placeholder="例）1F廊下">
+        </div>
+        <div class="check-group">
+          <label>種別</label>
+          ${sel(`type_${n}`, TYPES)}
+        </div>
+        <div class="check-group">
+          <label>能力単位</label>
+          <input type="text" name="capacity_${n}" class="check-input" placeholder="ABC-3">
+        </div>
+        <div class="check-group">
+          <label>製造年</label>
+          <input type="text" name="year_${n}" class="check-input" placeholder="2020">
+        </div>
+        <div class="check-group">
+          <label>指示圧力値(MPa)</label>
+          <input type="text" name="pressure_${n}" class="check-input" placeholder="0.85">
+        </div>
+        <div class="check-group">
+          <label>判　定</label>
+          <select name="judgment_${n}" class="check-sel judgment-sel ok" id="jsel_${n}" onchange="onJudge(this,${n})">
+            <option value="適">適</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+      </div>
+      <div class="ext-grid" style="margin-bottom:10px">
+        <div class="check-group">
+          <label>外形</label>
+          ${sel(`outer_${n}`, CHECK.outer)}
+        </div>
+        <div class="check-group">
+          <label>安全栓・封板</label>
+          ${sel(`safety_pin_${n}`, CHECK.safety_pin)}
+        </div>
+        <div class="check-group">
+          <label>本体容器</label>
+          ${sel(`body_${n}`, CHECK.body)}
+        </div>
+        <div class="check-group">
+          <label>キャップ</label>
+          ${sel(`cap_${n}`, CHECK.cap)}
+        </div>
+        <div class="check-group">
+          <label>ホース・ノズル</label>
+          ${sel(`hose_${n}`, CHECK.hose)}
+        </div>
+        <div class="check-group">
+          <label>備考</label>
+          <input type="text" name="note_${n}" class="check-input" placeholder="特記事項">
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('extList').appendChild(div);
+  updateCount();
+}
+
+function delCard(n) {
+  const c = document.getElementById(`card_${n}`);
+  if (c) c.remove();
+  // renumber display only
+  updateCount();
+}
+
+function onJudge(sel, n) {
+  sel.className = 'check-sel judgment-sel ' + (sel.value === '適' ? 'ok' : 'ng');
+}
+function onChg(el) {}
+
+function updateCount() {
+  const cards = document.querySelectorAll('.ext-card').length;
+  document.getElementById('countInput').value = cards;
+  document.getElementById('topCount').textContent = cards + ' 本';
+  document.getElementById('bottomCount').textContent = cards + ' 本';
+  // re-number card headers
+  document.querySelectorAll('.ext-card').forEach((c, i) => {
+    const hd = c.querySelector('.ext-num');
+    if (hd) hd.textContent = `No.${i+1}`;
+    // update name attributes
+    c.querySelectorAll('[name]').forEach(el => {
+      el.name = el.name.replace(/_\d+$/, `_${i+1}`);
+    });
+    c.querySelectorAll('[id^="jsel_"]').forEach(el => {
+      el.id = `jsel_${i+1}`;
+    });
+    c.querySelectorAll('[onclick]').forEach(el => {
+      el.setAttribute('onclick', el.getAttribute('onclick').replace(/\d+\)/, `${i+1})`));
+    });
+  });
+}
+
+function submitForm() {
+  const cards = document.querySelectorAll('.ext-card').length;
+  if (cards === 0) { alert('消火器を1本以上入力してください。'); return; }
+  document.getElementById('mainForm').submit();
+}
+
+// 今日の日付をデフォルト設定
+const today = new Date().toISOString().split('T')[0];
+document.getElementById('inspected_at').value = today;
+
+addCard();
+</script>
+</body>
+</html>

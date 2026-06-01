@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消防設備点検システム | ダッシュボード</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; min-height: 100vh; }
+
+.topbar {
+  background: #c0392b;
+  color: white;
+  padding: 0 20px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.topbar .logo { font-size: 18px; font-weight: 800; letter-spacing: 0.05em; }
+.topbar .sub { font-size: 12px; opacity: 0.8; }
+.topbar .spacer { flex: 1; }
+.topbar a, .topbar button {
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 7px 14px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.topbar a:hover, .topbar button:hover { background: rgba(255,255,255,0.28); }
+.topbar a.primary {
+  background: white;
+  color: #c0392b;
+  border-color: white;
+}
+.topbar a.primary:hover { background: #f8f8f8; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+
+/* 統計カード */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-card .num { font-size: 32px; font-weight: 800; line-height: 1; }
+.stat-card .lbl { font-size: 12px; color: #888; }
+.stat-card.red .num { color: #c0392b; }
+.stat-card.orange .num { color: #e67e22; }
+.stat-card.green .num { color: #27ae60; }
+.stat-card.gray .num { color: #7f8c8d; }
+
+/* セクションヘッダー */
+.sec-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sec-hd h2 { font-size: 15px; font-weight: 700; color: #2c3e50; }
+.filter-tabs { display: flex; gap: 4px; }
+.tab {
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: #555;
+}
+.tab.active { background: #c0392b; color: white; border-color: #c0392b; }
+
+/* 物件カード */
+.prop-grid { display: flex; flex-direction: column; gap: 10px; }
+.prop-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-left: 5px solid #ddd;
+  transition: box-shadow 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+.prop-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.12); }
+.prop-card.overdue { border-left-color: #c0392b; }
+.prop-card.warning { border-left-color: #e67e22; }
+.prop-card.ok { border-left-color: #27ae60; }
+.prop-card.unset { border-left-color: #95a5a6; }
+
+.prop-info { flex: 1; min-width: 0; }
+.prop-name { font-size: 15px; font-weight: 700; color: #2c3e50; margin-bottom: 3px; }
+.prop-meta { font-size: 12px; color: #888; display: flex; gap: 12px; flex-wrap: wrap; }
+.prop-meta span { white-space: nowrap; }
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.status-badge.overdue { background: #fdf2f2; color: #c0392b; border: 1px solid #f5c6c6; }
+.status-badge.warning { background: #fef9e7; color: #e67e22; border: 1px solid #f8e0a0; }
+.status-badge.ok { background: #eafaf1; color: #27ae60; border: 1px solid #a9e4c0; }
+.status-badge.unset { background: #f5f5f5; color: #95a5a6; border: 1px solid #ddd; }
+
+.prop-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.act-btn {
+  padding: 7px 14px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.act-btn.inspect { background: #c0392b; color: white; }
+.act-btn.inspect:hover { background: #a93226; }
+.act-btn.history { background: #f0f2f5; color: #555; border: 1px solid #ddd; }
+.act-btn.history:hover { background: #e8eaed; }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #aaa;
+}
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 14px; }
+
+/* 削除フォーム */
+.del-form { display: inline; }
+.del-btn {
+  background: none;
+  border: none;
+  color: #ddd;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.del-btn:hover { color: #c0392b; background: #fdf2f2; }
+
+@media (max-width: 600px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .prop-card { flex-wrap: wrap; gap: 10px; }
+  .prop-actions { width: 100%; }
+  .act-btn { flex: 1; justify-content: center; }
+  .topbar .sub { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo">🔥 消防点検</span>
+  <span class="sub">点検管理システム</span>
+  <span class="spacer"></span>
+  <a href="/property/new" class="primary">＋ 物件を追加</a>
+</div>
+
+<div class="container">
+
+  <!-- 統計 -->
+  <div class="stats">
+    <div class="stat-card gray">
+      <span class="num">{{ props|length }}</span>
+      <span class="lbl">管理物件数</span>
+    </div>
+    <div class="stat-card red">
+      <span class="num">{{ overdue }}</span>
+      <span class="lbl">期限超過</span>
+    </div>
+    <div class="stat-card orange">
+      <span class="num">{{ warning }}</span>
+      <span class="lbl">1ヶ月以内</span>
+    </div>
+    <div class="stat-card green">
+      <span class="num">{{ ok_count }}</span>
+      <span class="lbl">良好</span>
+    </div>
+  </div>
+
+  <!-- 物件一覧 -->
+  <div class="sec-hd">
+    <h2>物件一覧</h2>
+  </div>
+
+  {% if props %}
+  <div class="prop-grid">
+    {% for p in props %}
+    <div class="prop-card {{ p.status }}">
+      <div class="prop-info">
+        <div class="prop-name">{{ p.name }}</div>
+        <div class="prop-meta">
+          {% if p.address %}<span>📍 {{ p.address }}</span>{% endif %}
+          {% if p.owner_name %}<span>👤 {{ p.owner_name }}</span>{% endif %}
+          <span>📋 点検実施 {{ p.insp_count }}回</span>
+          {% if p.last_inspected %}<span>前回：{{ p.last_inspected }}</span>{% endif %}
+          {% if p.next_inspection %}<span>次回：{{ p.next_inspection }}</span>{% endif %}
+        </div>
+      </div>
+      <span class="status-badge {{ p.status }}">{{ p.status_label }}</span>
+      <div class="prop-actions">
+        <a href="/inspect/{{ p.id }}" class="act-btn inspect">📝 点検開始</a>
+        <form class="del-form" method="POST" action="/property/{{ p.id }}/delete"
+              onsubmit="return confirm('「{{ p.name }}」を削除しますか？')">
+          <button class="del-btn" type="submit">🗑</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">🏢</div>
+    <p>物件が登録されていません。<br>「物件を追加」から登録してください。</p>
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>
