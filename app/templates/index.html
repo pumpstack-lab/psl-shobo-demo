@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>消防設備点検システム | PSL Demo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+    background: #f0f2f5;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+  .top-bar {
+    background: #c0392b;
+    color: white;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .top-bar .icon { font-size: 22px; }
+  .top-bar h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.05em; }
+  .top-bar .sub { font-size: 12px; opacity: 0.8; margin-left: auto; }
+  .container { max-width: 800px; margin: 32px auto; padding: 0 16px 48px; }
+  .card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #c0392b;
+    border-left: 4px solid #c0392b;
+    padding-left: 10px;
+    margin-bottom: 20px;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 12px; color: #666; font-weight: 600; }
+  input, select {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus { outline: none; border-color: #c0392b; }
+  .date-row { display: flex; align-items: center; gap: 6px; }
+  .date-row input { width: 60px; text-align: center; }
+  .date-row span { font-size: 13px; color: #555; }
+
+  .extinguisher-section { margin-top: 8px; }
+  .ext-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    background: #fafafa;
+    position: relative;
+  }
+  .ext-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c0392b;
+    margin-bottom: 14px;
+  }
+  .check-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .check-group label { font-size: 11px; color: #555; }
+  .check-group select { font-size: 13px; padding: 7px 10px; }
+  .judgment-ok { background: #eafaf1; }
+  .judgment-ng { background: #fdf2f2; }
+
+  .count-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .count-control button {
+    width: 36px; height: 36px;
+    border: 2px solid #c0392b;
+    background: white;
+    color: #c0392b;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .count-control button:hover { background: #c0392b; color: white; }
+  .count-control span { font-size: 16px; font-weight: 700; min-width: 20px; text-align: center; }
+
+  .submit-btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: #c0392b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover { background: #a93226; }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.triple { grid-template-columns: 1fr 1fr; }
+    .check-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <span class="icon">🔥</span>
+  <h1>消防設備点検システム</h1>
+  <span class="sub">消火器具 機器点検票</span>
+</div>
+
+<div class="container">
+<form method="POST" action="/preview" id="mainForm">
+  <input type="hidden" name="count" id="countInput" value="1">
+
+  <div class="card">
+    <div class="card-title">点検基本情報</div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>点検年月日</label>
+        <div class="date-row">
+          <span>令和</span>
+          <input type="number" name="date_y" min="1" max="99" placeholder="7" style="width:55px">
+          <span>年</span>
+          <input type="number" name="date_m" min="1" max="12" placeholder="6" style="width:50px">
+          <span>月</span>
+          <input type="number" name="date_d" min="1" max="31" placeholder="1" style="width:50px">
+          <span>日</span>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>防火対象物名称</label>
+        <input type="text" name="building_name" placeholder="例）〇〇ビル・△△アパート">
+      </div>
+      <div class="form-group full">
+        <label>所在地</label>
+        <input type="text" name="address" placeholder="例）東京都渋谷区〇〇1-2-3">
+      </div>
+      <div class="form-group">
+        <label>関係者（管理者）</label>
+        <input type="text" name="owner" placeholder="氏名または法人名">
+      </div>
+      <div class="form-group">
+        <label>点検者氏名</label>
+        <input type="text" name="inspector_name" placeholder="消防設備士 氏名">
+      </div>
+      <div class="form-group">
+        <label>消防設備士免状番号</label>
+        <input type="text" name="inspector_num" placeholder="例）第123456号">
+      </div>
+      <div class="form-group">
+        <label>点検対象期間</label>
+        <div class="date-row" style="flex-wrap:wrap;gap:4px;">
+          <input type="text" name="period_from" placeholder="例）R6.12.1" style="width:110px">
+          <span>〜</span>
+          <input type="text" name="period_to" placeholder="例）R7.5.31" style="width:110px">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">消火器 点検一覧</div>
+    <div class="count-control">
+      <span style="font-size:13px;color:#555;">消火器の本数：</span>
+      <button type="button" onclick="changeCount(-1)">−</button>
+      <span id="countDisplay">1</span>
+      <button type="button" onclick="changeCount(1)">＋</button>
+      <span style="font-size:13px;color:#555;">本</span>
+    </div>
+
+    <div class="extinguisher-section" id="extList">
+      <!-- JS で生成 -->
+    </div>
+  </div>
+
+  <button type="submit" class="submit-btn">点検票を作成する →</button>
+</form>
+</div>
+
+<script>
+const types = {{ extinguisher_types | tojson }};
+const locations = {{ locations | tojson }};
+let count = 1;
+
+function changeCount(delta) {
+  count = Math.max(1, Math.min(20, count + delta));
+  document.getElementById("countDisplay").textContent = count;
+  document.getElementById("countInput").value = count;
+  renderList();
+}
+
+function renderList() {
+  const container = document.getElementById("extList");
+  container.innerHTML = "";
+  for (let i = 1; i <= count; i++) {
+    container.innerHTML += `
+    <div class="ext-card">
+      <div class="ext-num">No. ${i}</div>
+      <div class="form-grid triple">
+        <div class="form-group">
+          <label>設置場所</label>
+          <select name="location_${i}">
+            ${locations.map(l => `<option>${l}</option>`).join("")}
+            <option value="その他">その他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>種別</label>
+          <select name="type_${i}">
+            ${types.map(t => `<option>${t}</option>`).join("")}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>能力単位</label>
+          <input type="text" name="capacity_${i}" placeholder="例）ABC-3">
+        </div>
+        <div class="form-group">
+          <label>製造年</label>
+          <input type="text" name="year_${i}" placeholder="例）2018">
+        </div>
+        <div class="form-group">
+          <label>指示圧力値（MPa）</label>
+          <input type="text" name="pressure_${i}" placeholder="例）0.85">
+        </div>
+        <div class="form-group">
+          <label>判定</label>
+          <select name="judgment_${i}" onchange="this.parentElement.className='form-group '+(this.value==='適'?'judgment-ok':'judgment-ng')">
+            <option value="適">適</option>
+            <option value="否">否</option>
+          </select>
+        </div>
+      </div>
+      <div class="check-row">
+        <div class="check-group form-group">
+          <label>外形</label>
+          <select name="outer_${i}">
+            <option>正常</option><option>変形</option><option>腐食</option><option>損傷</option>
+          </select>
+        </div>
+        <div class="check-group form-group">
+          <label>安全栓・封板</label>
+          <select name="safety_pin_${i}">
+            <option>正常</option><option>脱落</option><option>変形</option><option>破れ</option>
+          </select>
+        </div>
+        <div class="check-group form-group">
+          <label>本体容器</label>
+          <select name="body_${i}">
+            <option>正常</option><option>変形</option><option>腐食</option><option>損傷</option>
+          </select>
+        </div>
+        <div class="check-group form-group">
+          <label>キャップ</label>
+          <select name="cap_${i}">
+            <option>正常</option><option>変形</option><option>腐食</option>
+          </select>
+        </div>
+        <div class="check-group form-group">
+          <label>ホース・ノズル</label>
+          <select name="hose_${i}">
+            <option>正常</option><option>変形</option><option>詰まり</option><option>損傷</option>
+          </select>
+        </div>
+        <div class="check-group form-group">
+          <label>備考</label>
+          <input type="text" name="note_${i}" placeholder="特記事項">
+        </div>
+      </div>
+    </div>`;
+  }
+}
+
+renderList();
+</script>
+</body>
+</html>
