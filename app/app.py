@@ -110,6 +110,10 @@ def calc_status(next_inspection_str):
         return "ok", f"残り{diff}日", "#27ae60"
 
 # ─── ルート ──────────────────────────────────────────
+@app.route("/proposal")
+def proposal():
+    return render_template("proposal.html")
+
 @app.route("/")
 def dashboard():
     db = get_db()
