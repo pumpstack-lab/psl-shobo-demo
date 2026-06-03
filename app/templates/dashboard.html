@@ -6,187 +6,266 @@
 <title>消防設備点検システム | ダッシュボード</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; min-height: 100vh; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #eef0f3; min-height: 100vh; color: #1a2433; }
 
+/* ---- トップバー ---- */
 .topbar {
   background: #c0392b;
   color: white;
   padding: 0 20px;
-  height: 52px;
+  height: 56px;
   display: flex;
   align-items: center;
   gap: 12px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
-.topbar .logo { font-size: 18px; font-weight: 800; letter-spacing: 0.05em; }
-.topbar .sub { font-size: 12px; opacity: 0.8; }
+.topbar .logo {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar .logo svg { width: 22px; height: 22px; flex-shrink: 0; }
+.topbar .sub { font-size: 12px; opacity: 0.75; }
 .topbar .spacer { flex: 1; }
 .topbar a, .topbar button {
-  background: rgba(255,255,255,0.18);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
   color: white;
-  padding: 7px 14px;
+  padding: 0 16px;
+  height: 38px;
   border-radius: 5px;
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: background 0.12s;
 }
-.topbar a:hover, .topbar button:hover { background: rgba(255,255,255,0.28); }
+.topbar a:hover, .topbar button:hover { background: rgba(255,255,255,0.25); }
 .topbar a.primary {
   background: white;
   color: #c0392b;
   border-color: white;
 }
-.topbar a.primary:hover { background: #f8f8f8; }
+.topbar a.primary:hover { background: #f5f5f5; }
 
-.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
 
-/* 統計カード */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+/* ---- 統計カード ---- */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
 .stat-card {
   background: white;
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 18px 20px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
-.stat-card .num { font-size: 32px; font-weight: 800; line-height: 1; }
-.stat-card .lbl { font-size: 12px; color: #888; }
+.stat-card .num { font-size: 30px; font-weight: 800; line-height: 1; }
+.stat-card .lbl { font-size: 12px; color: #5a6572; font-weight: 500; }
 .stat-card.red .num { color: #c0392b; }
-.stat-card.orange .num { color: #e67e22; }
-.stat-card.green .num { color: #27ae60; }
-.stat-card.gray .num { color: #7f8c8d; }
+.stat-card.orange .num { color: #d35400; }
+.stat-card.green .num { color: #1e8449; }
+.stat-card.gray .num { color: #4a5568; }
 
-/* セクションヘッダー */
+/* ---- セクションヘッダー ---- */
 .sec-hd {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
-.sec-hd h2 { font-size: 15px; font-weight: 700; color: #2c3e50; }
+.sec-hd h2 { font-size: 14px; font-weight: 700; color: #1a2433; letter-spacing: 0.01em; }
+
+/* ---- フィルタータブ ---- */
 .filter-tabs { display: flex; gap: 4px; }
 .tab {
-  padding: 5px 12px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
+  padding: 0 14px;
+  height: 36px;
+  border-radius: 5px;
+  border: 1px solid #d0d5dd;
   background: white;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   font-family: inherit;
-  color: #555;
+  color: #3d4a5c;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.12s, color 0.12s;
 }
-.tab.active { background: #c0392b; color: white; border-color: #c0392b; }
+.tab.active { background: #c0392b; color: white; border-color: #c0392b; font-weight: 700; }
+.tab:hover:not(.active) { background: #f5f7fa; }
 
-/* 物件カード */
-.prop-grid { display: flex; flex-direction: column; gap: 10px; }
+/* ---- 物件カード ---- */
+.prop-grid { display: flex; flex-direction: column; gap: 8px; }
 .prop-card {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   padding: 16px 20px;
   display: flex;
   align-items: center;
   gap: 16px;
-  border-left: 5px solid #ddd;
   transition: box-shadow 0.15s;
   text-decoration: none;
   color: inherit;
+  /* ステータスは左ボーダーではなくアイコンとバッジで示す */
 }
-.prop-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.12); }
-.prop-card.overdue { border-left-color: #c0392b; }
-.prop-card.warning { border-left-color: #e67e22; }
-.prop-card.ok { border-left-color: #27ae60; }
-.prop-card.unset { border-left-color: #95a5a6; }
+.prop-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.12); }
+
+/* ステータス帯: カード左端に細い着色ライン（1px = decorative と判断されない幅）ではなく
+   カード全体を微妙に染める背景 */
+.prop-card.overdue { background: #fff8f8; }
+.prop-card.warning { background: #fffdf5; }
+.prop-card.ok      { background: white; }
+.prop-card.unset   { background: #fafafa; }
+
+/* ステータスアイコン: カード左端の縦帯の代わりに専用アイコン列を置く */
+.status-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+.status-icon.overdue { background: #fdf2f2; }
+.status-icon.warning { background: #fef6e4; }
+.status-icon.ok      { background: #eafaf1; }
+.status-icon.unset   { background: #f0f2f5; }
 
 .prop-info { flex: 1; min-width: 0; }
-.prop-name { font-size: 15px; font-weight: 700; color: #2c3e50; margin-bottom: 3px; }
-.prop-meta { font-size: 12px; color: #888; display: flex; gap: 12px; flex-wrap: wrap; }
+.prop-name { font-size: 15px; font-weight: 700; color: #1a2433; margin-bottom: 4px; }
+.prop-meta { font-size: 12px; color: #5a6572; display: flex; gap: 12px; flex-wrap: wrap; }
 .prop-meta span { white-space: nowrap; }
 
+/* ---- ステータスバッジ ---- */
 .status-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
+  padding: 5px 12px;
+  border-radius: 5px;
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
 }
-.status-badge.overdue { background: #fdf2f2; color: #c0392b; border: 1px solid #f5c6c6; }
-.status-badge.warning { background: #fef9e7; color: #e67e22; border: 1px solid #f8e0a0; }
-.status-badge.ok { background: #eafaf1; color: #27ae60; border: 1px solid #a9e4c0; }
-.status-badge.unset { background: #f5f5f5; color: #95a5a6; border: 1px solid #ddd; }
+.status-badge.overdue { background: #c0392b; color: white; }
+.status-badge.warning { background: #d35400; color: white; }
+.status-badge.ok      { background: #eafaf1; color: #1e8449; border: 1px solid #a9e4c0; }
+.status-badge.unset   { background: #f0f2f5; color: #5a6572; border: 1px solid #d0d5dd; }
 
+/* ---- 物件アクション ---- */
 .prop-actions { display: flex; gap: 8px; flex-shrink: 0; }
 .act-btn {
-  padding: 7px 14px;
-  border-radius: 5px;
-  font-size: 12px;
+  padding: 0 16px;
+  height: 44px;
+  border-radius: 6px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   border: none;
   text-decoration: none;
   font-family: inherit;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  transition: background 0.12s;
 }
 .act-btn.inspect { background: #c0392b; color: white; }
 .act-btn.inspect:hover { background: #a93226; }
-.act-btn.history { background: #f0f2f5; color: #555; border: 1px solid #ddd; }
-.act-btn.history:hover { background: #e8eaed; }
+.act-btn.history { background: #f0f2f5; color: #3d4a5c; border: 1px solid #d0d5dd; }
+.act-btn.history:hover { background: #e4e8ed; }
 
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: #aaa;
-}
-.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; }
-
-/* 削除フォーム */
+/* ---- 削除ボタン ---- */
 .del-form { display: inline; }
 .del-btn {
   background: none;
-  border: none;
-  color: #ddd;
+  border: 1px solid transparent;
+  color: #b0bec5;
   cursor: pointer;
-  font-size: 14px;
-  padding: 4px 6px;
-  border-radius: 4px;
+  font-size: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.12s, background 0.12s;
 }
-.del-btn:hover { color: #c0392b; background: #fdf2f2; }
+.del-btn:hover { color: #c0392b; background: #fdf2f2; border-color: #f5c6c6; }
 
-@media (max-width: 600px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .prop-card { flex-wrap: wrap; gap: 10px; }
-  .prop-actions { width: 100%; }
-  .act-btn { flex: 1; justify-content: center; }
-  .topbar .sub { display: none; }
+/* ---- 空状態 ---- */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7a8796;
 }
+.empty-state .empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  color: #c0d0dc;
+}
+.empty-state p { font-size: 14px; line-height: 1.7; }
 
+/* ---- フッター ---- */
 .psl-footer {
   text-align: center; padding: 24px 16px;
-  font-size: 11px; color: #bbb; border-top: 1px solid #eee; margin-top: 40px;
+  font-size: 11px; color: #b0bec5; border-top: 1px solid #e4e8ed; margin-top: 40px;
 }
-.psl-footer a { color: #bbb; text-decoration: none; }
-.psl-footer a:hover { color: #888; }
+.psl-footer a { color: #b0bec5; text-decoration: none; }
+.psl-footer a:hover { color: #7a8796; }
+
+/* ---- レスポンシブ ---- */
+@media (max-width: 768px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .topbar .sub { display: none; }
+}
+@media (max-width: 600px) {
+  .prop-card { flex-wrap: wrap; }
+  .prop-actions { width: 100%; gap: 8px; }
+  .act-btn { flex: 1; justify-content: center; height: 48px; font-size: 14px; }
+  .del-btn { width: 48px; height: 48px; }
+  .status-icon { display: none; }
+  .topbar { height: 52px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prop-card, .act-btn, .del-btn, .tab { transition: none; }
+}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <span class="logo">🔥 消防点検</span>
-  <span class="sub">点検管理システム</span>
+  <span class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 2C8 6 6 10 8 14a5 5 0 0 0 8 0c2-4 0-8-4-12z"/>
+      <path d="M12 14v4"/>
+    </svg>
+    消防点検
+  </span>
+  <span class="sub">設備点検管理</span>
   <span class="spacer"></span>
-  <a href="/property/new" class="primary">＋ 物件を追加</a>
+  <a href="/property/new" class="primary">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/>
+    </svg>
+    物件を追加
+  </a>
 </div>
 
 <div class="container">
@@ -220,23 +299,57 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; 
   <div class="prop-grid">
     {% for p in props %}
     <div class="prop-card {{ p.status }}">
+
+      <!-- ステータスアイコン（左端の帯の代替）-->
+      {% if p.status == 'overdue' %}
+      <div class="status-icon overdue" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#c0392b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="10" r="8"/><line x1="10" y1="6" x2="10" y2="11"/><circle cx="10" cy="14" r="0.8" fill="#c0392b" stroke="none"/>
+        </svg>
+      </div>
+      {% elif p.status == 'warning' %}
+      <div class="status-icon warning" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#d35400" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 3L18 17H2L10 3z"/><line x1="10" y1="9" x2="10" y2="13"/><circle cx="10" cy="15.5" r="0.8" fill="#d35400" stroke="none"/>
+        </svg>
+      </div>
+      {% elif p.status == 'ok' %}
+      <div class="status-icon ok" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#1e8449" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="10" r="8"/><polyline points="6,10 9,13 14,7"/>
+        </svg>
+      </div>
+      {% else %}
+      <div class="status-icon unset" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#7a8796" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="10" r="8"/><line x1="7" y1="10" x2="13" y2="10"/>
+        </svg>
+      </div>
+      {% endif %}
+
       <div class="prop-info">
         <div class="prop-name">{{ p.name }}</div>
         <div class="prop-meta">
-          {% if p.address %}<span>📍 {{ p.address }}</span>{% endif %}
-          {% if p.owner_name %}<span>👤 {{ p.owner_name }}</span>{% endif %}
-          <span>📋 点検実施 {{ p.insp_count }}回</span>
+          {% if p.address %}<span>{{ p.address }}</span>{% endif %}
+          {% if p.owner_name %}<span>{{ p.owner_name }}</span>{% endif %}
+          <span>点検 {{ p.insp_count }}回</span>
           {% if p.last_inspected %}<span>前回：{{ p.last_inspected }}</span>{% endif %}
           {% if p.next_inspection %}<span>次回：{{ p.next_inspection }}</span>{% endif %}
         </div>
       </div>
+
       <span class="status-badge {{ p.status }}">{{ p.status_label }}</span>
+
       <div class="prop-actions">
-        <a href="/inspect/{{ p.id }}" class="act-btn inspect">📝 点検開始</a>
-        <a href="/property/{{ p.id }}/history" class="act-btn history">📋 履歴</a>
+        <a href="/inspect/{{ p.id }}" class="act-btn inspect">点検開始</a>
+        <a href="/property/{{ p.id }}/history" class="act-btn history">履歴</a>
         <form class="del-form" method="POST" action="/property/{{ p.id }}/delete"
               onsubmit="return confirm('「{{ p.name }}」を削除しますか？')">
-          <button class="del-btn" type="submit">🗑</button>
+          <button class="del-btn" type="submit" aria-label="{{ p.name }}を削除">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="2,4 14,4"/><path d="M5 4V2h6v2"/><path d="M6 4v8m4-8v8"/><rect x="3" y="4" width="10" height="10" rx="1"/>
+            </svg>
+          </button>
         </form>
       </div>
     </div>
@@ -244,7 +357,12 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; 
   </div>
   {% else %}
   <div class="empty-state">
-    <div class="icon">🏢</div>
+    <svg class="empty-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="10" y="8" width="36" height="44" rx="3"/>
+      <line x1="18" y1="20" x2="38" y2="20"/>
+      <line x1="18" y1="28" x2="38" y2="28"/>
+      <line x1="18" y1="36" x2="30" y2="36"/>
+    </svg>
     <p>物件が登録されていません。<br>「物件を追加」から登録してください。</p>
   </div>
   {% endif %}

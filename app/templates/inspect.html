@@ -6,133 +6,180 @@
 <title>点検入力 | {{ prop['name'] }}</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #eef0f3; color: #1a2433; }
 
+/* ---- トップバー ---- */
 .topbar {
-  background: #c0392b; color: white; padding: 0 16px; height: 52px;
+  background: #c0392b; color: white; padding: 0 16px; height: 56px;
   display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
-.topbar a { color: white; text-decoration: none; font-size: 13px; opacity: 0.8; }
-.topbar .prop-name { font-size: 14px; font-weight: 700; flex: 1; }
+.topbar-back {
+  color: white; text-decoration: none; font-size: 14px; font-weight: 500;
+  opacity: 0.85; display: inline-flex; align-items: center; gap: 5px;
+  padding: 0 8px; height: 44px; border-radius: 5px;
+  transition: opacity 0.12s;
+}
+.topbar-back:hover { opacity: 1; background: rgba(255,255,255,0.12); }
+.topbar-back svg { flex-shrink: 0; }
+.prop-name { font-size: 14px; font-weight: 700; flex: 1; }
 .count-badge {
-  background: rgba(255,255,255,0.2);
-  padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 700;
+  background: rgba(255,255,255,0.18);
+  padding: 5px 12px; border-radius: 5px; font-size: 13px; font-weight: 700;
 }
 
-/* 設備タイプ選択タブ */
+/* ---- 設備タイプ選択タブ ---- */
 .type-tabs {
-  background: #fff; border-bottom: 2px solid #e8e8e8;
+  background: #fff; border-bottom: 2px solid #e4e8ed;
   display: flex; overflow-x: auto; padding: 0 16px; gap: 0;
-  position: sticky; top: 52px; z-index: 99;
+  position: sticky; top: 56px; z-index: 99;
+  -webkit-overflow-scrolling: touch;
 }
 .type-tab {
-  padding: 12px 20px; font-size: 13px; font-weight: 600; color: #888;
+  padding: 0 18px; height: 48px; font-size: 14px; font-weight: 600; color: #5a6572;
   text-decoration: none; white-space: nowrap; border-bottom: 3px solid transparent;
-  margin-bottom: -2px; transition: color 0.15s;
+  margin-bottom: -2px; display: inline-flex; align-items: center;
+  transition: color 0.12s;
 }
 .type-tab.active { color: #c0392b; border-bottom-color: #c0392b; }
-.type-tab:hover { color: #c0392b; background: #fff8f8; }
+.type-tab:hover:not(.active) { color: #c0392b; background: #fff8f8; }
 
+/* ---- メインコンテナ ---- */
 .container { max-width: 900px; margin: 0 auto; padding: 16px; padding-bottom: 100px; }
 
+/* ---- 点検情報カード ---- */
 .info-card {
-  background: white; border-radius: 10px; padding: 16px 18px;
-  margin-bottom: 14px; box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  background: white; border-radius: 8px; padding: 18px 20px;
+  margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
 .info-card-title {
-  font-size: 12px; font-weight: 700; color: #c0392b;
-  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;
+  font-size: 13px; font-weight: 700; color: #1a2433;
+  margin-bottom: 14px; padding-bottom: 10px;
+  border-bottom: 1px solid #e4e8ed;
 }
-.info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.fg { display: flex; flex-direction: column; gap: 3px; }
-.fg label { font-size: 11px; font-weight: 600; color: #777; }
-.fg input {
-  height: 36px; border: 1px solid #ddd; border-radius: 5px;
-  padding: 0 10px; font-size: 13px; font-family: inherit;
-}
-.fg input:focus { outline: none; border-color: #c0392b; }
+.info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
+/* ---- フォームグループ ---- */
+.fg { display: flex; flex-direction: column; gap: 5px; }
+.fg label { font-size: 12px; font-weight: 600; color: #3d4a5c; }
+.fg input {
+  height: 44px; border: 1px solid #d0d5dd; border-radius: 6px;
+  padding: 0 12px; font-size: 14px; font-family: inherit; background: white;
+  transition: border-color 0.12s;
+}
+.fg input:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.12); }
+
+/* ---- セクション見出し ---- */
 .ext-section-title {
-  font-size: 14px; font-weight: 700; color: #2c3e50; margin: 16px 0 10px;
+  font-size: 14px; font-weight: 700; color: #1a2433; margin: 18px 0 10px;
   display: flex; align-items: center; justify-content: space-between;
 }
+
+/* ---- 追加ボタン ---- */
 .add-btn {
-  background: white; border: 1.5px dashed #c0392b; color: #c0392b;
-  padding: 6px 14px; border-radius: 5px; font-size: 13px; font-weight: 600;
-  cursor: pointer; font-family: inherit;
+  background: white; border: 2px dashed #c0392b; color: #c0392b;
+  padding: 0 18px; height: 44px; border-radius: 6px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 5px;
+  transition: background 0.12s;
 }
 .add-btn:hover { background: #fff0ef; }
 
+/* ---- 設備カード ---- */
 .ext-card {
-  background: white; border-radius: 10px; margin-bottom: 10px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.07); overflow: hidden;
+  background: white; border-radius: 8px; margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08); overflow: hidden;
 }
 .ext-card-hd {
   background: #2c3e50; color: white; padding: 10px 16px;
   display: flex; align-items: center; gap: 10px;
 }
-.ext-num { font-size: 15px; font-weight: 700; }
+.ext-num { font-size: 14px; font-weight: 700; }
 .ext-del {
-  margin-left: auto; background: rgba(255,255,255,0.15); border: none;
-  color: white; padding: 3px 10px; border-radius: 3px; cursor: pointer;
-  font-size: 12px; font-family: inherit;
+  margin-left: auto; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  color: white; padding: 0 14px; height: 36px; border-radius: 5px; cursor: pointer;
+  font-size: 13px; font-family: inherit; display: inline-flex; align-items: center;
+  transition: background 0.12s;
 }
-.ext-del:hover { background: rgba(255,0,0,0.3); }
-.ext-body { padding: 14px 16px; }
-.ext-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ext-del:hover { background: rgba(220,50,50,0.4); border-color: rgba(255,100,100,0.4); }
+.ext-body { padding: 16px; }
+.ext-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-.check-group { display: flex; flex-direction: column; gap: 4px; }
-.check-group label { font-size: 11px; font-weight: 600; color: #777; }
+/* ---- チェックグループ ---- */
+.check-group { display: flex; flex-direction: column; gap: 5px; }
+.check-group label { font-size: 12px; font-weight: 600; color: #3d4a5c; }
 select.check-sel {
-  height: 38px; border: 1px solid #ddd; border-radius: 5px;
-  padding: 0 8px; font-size: 13px; font-family: inherit; background: white;
+  height: 44px; border: 1px solid #d0d5dd; border-radius: 6px;
+  padding: 0 10px; font-size: 14px; font-family: inherit; background: white;
+  transition: border-color 0.12s;
 }
-select.check-sel:focus { outline: none; border-color: #c0392b; }
-select.judgment-sel {
-  height: 42px; font-size: 15px; font-weight: 700; text-align: center; border-width: 2px;
-}
-select.judgment-sel.ok { border-color: #27ae60; color: #27ae60; background: #eafaf1; }
-select.judgment-sel.ng { border-color: #c0392b; color: #c0392b; background: #fdf2f2; }
-input.check-input {
-  height: 38px; border: 1px solid #ddd; border-radius: 5px;
-  padding: 0 10px; font-size: 13px; font-family: inherit; width: 100%;
-}
-input.check-input:focus { outline: none; border-color: #c0392b; }
+select.check-sel:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.12); }
 
+/* 判定セレクト */
+select.judgment-sel {
+  height: 48px; font-size: 16px; font-weight: 700; text-align: center;
+  border-width: 2px; border-radius: 6px;
+}
+select.judgment-sel.ok { border-color: #1e8449; color: #1e8449; background: #eafaf1; }
+select.judgment-sel.ng { border-color: #c0392b; color: #c0392b; background: #fdf2f2; }
+
+input.check-input {
+  height: 44px; border: 1px solid #d0d5dd; border-radius: 6px;
+  padding: 0 12px; font-size: 14px; font-family: inherit; width: 100%;
+  transition: border-color 0.12s;
+}
+input.check-input:focus { outline: none; border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.12); }
+
+/* ---- 送信バー ---- */
 .submit-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: white; border-top: 1px solid #ddd;
-  padding: 12px 16px; box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
-  display: flex; gap: 10px; align-items: center; z-index: 200;
+  background: white; border-top: 1px solid #e4e8ed;
+  padding: 12px 16px; box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+  display: flex; gap: 12px; align-items: center; z-index: 200;
 }
 .submit-btn {
-  flex: 1; height: 48px; background: #c0392b; color: white; border: none;
-  border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+  flex: 1; height: 52px; background: #c0392b; color: white; border: none;
+  border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.12s;
 }
 .submit-btn:hover { background: #a93226; }
-.submit-sub { font-size: 11px; color: #aaa; }
-.ext-count { font-size: 13px; font-weight: 700; color: #2c3e50; }
+.submit-sub { font-size: 12px; color: #5a6572; }
+.ext-count { font-size: 14px; font-weight: 700; color: #1a2433; }
 
+/* ---- レスポンシブ ---- */
 @media (max-width: 600px) {
   .info-grid { grid-template-columns: 1fr 1fr; }
   .ext-grid { grid-template-columns: 1fr 1fr; }
+  .type-tab { padding: 0 14px; height: 44px; font-size: 13px; }
+  .submit-btn { height: 56px; font-size: 17px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-btn, .ext-del, .submit-btn, .fg input, select.check-sel,
+  input.check-input, .topbar-back, .type-tab { transition: none; }
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <a href="/">← 戻る</a>
+  <a href="/" class="topbar-back">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="10,3 5,8 10,13"/>
+    </svg>
+    戻る
+  </a>
   <span class="prop-name">{{ prop['name'] }}</span>
   <span class="count-badge" id="topCount">0 件</span>
 </div>
 
 <!-- 設備タイプ選択タブ -->
-<div class="type-tabs">
+<div class="type-tabs" role="tablist" aria-label="設備タイプ">
   {% for et in equip_types %}
   <a href="/inspect/{{ prop['id'] }}?type={{ et.id }}"
-     class="type-tab {% if selected_type == et.id %}active{% endif %}">
+     class="type-tab {% if selected_type == et.id %}active{% endif %}"
+     role="tab"
+     aria-selected="{{ 'true' if selected_type == et.id else 'false' }}">
     {{ et.name }}
   </a>
   {% endfor %}
@@ -145,34 +192,39 @@ input.check-input:focus { outline: none; border-color: #c0392b; }
 
     <!-- 点検者情報 -->
     <div class="info-card">
-      <div class="info-card-title">▶ 点検情報</div>
+      <div class="info-card-title">点検情報</div>
       <div class="info-grid">
         <div class="fg">
-          <label>点検実施日</label>
+          <label for="inspected_at">点検実施日</label>
           <input type="date" name="inspected_at" id="inspected_at">
         </div>
         <div class="fg">
-          <label>点検者氏名</label>
-          <input type="text" name="inspector_name" placeholder="消防設備士 氏名">
+          <label for="inspector_name">点検者氏名</label>
+          <input type="text" name="inspector_name" id="inspector_name" placeholder="消防設備士 氏名">
         </div>
         <div class="fg">
-          <label>免状番号</label>
-          <input type="text" name="inspector_num" placeholder="第12345号">
+          <label for="inspector_num">免状番号</label>
+          <input type="text" name="inspector_num" id="inspector_num" placeholder="第12345号">
         </div>
         <div class="fg">
-          <label>点検対象期間（開始）</label>
-          <input type="text" name="period_from" placeholder="例）R6.12.1">
+          <label for="period_from">点検対象期間（開始）</label>
+          <input type="text" name="period_from" id="period_from" placeholder="例）R6.12.1">
         </div>
         <div class="fg">
-          <label>点検対象期間（終了）</label>
-          <input type="text" name="period_to" placeholder="例）R7.5.31">
+          <label for="period_to">点検対象期間（終了）</label>
+          <input type="text" name="period_to" id="period_to" placeholder="例）R7.5.31">
         </div>
       </div>
     </div>
 
     <div class="ext-section-title">
       <span>設備 点検一覧</span>
-      <button type="button" class="add-btn" onclick="addCard()">＋ 1件追加</button>
+      <button type="button" class="add-btn" onclick="addCard()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/>
+        </svg>
+        1件追加
+      </button>
     </div>
 
     <div id="extList"></div>
@@ -184,7 +236,12 @@ input.check-input:focus { outline: none; border-color: #c0392b; }
     <div class="ext-count" id="bottomCount">0 件</div>
     <div class="submit-sub">入力完了後に送信</div>
   </div>
-  <button type="button" class="submit-btn" onclick="submitForm()">点検票を作成 →</button>
+  <button type="button" class="submit-btn" onclick="submitForm()">
+    点検票を作成
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="6,3 11,8 6,13"/>
+    </svg>
+  </button>
 </div>
 
 <script>

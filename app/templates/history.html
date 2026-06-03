@@ -6,91 +6,160 @@
 <title>点検履歴 | {{ prop.name }}</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; min-height: 100vh; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #eef0f3; min-height: 100vh; color: #1a2433; }
+
+/* ---- トップバー ---- */
 .topbar {
-  background: #c0392b; color: white; padding: 0 20px; height: 52px;
+  background: #c0392b; color: white; padding: 0 20px; height: 56px;
   display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
-.topbar .logo { font-size: 18px; font-weight: 800; }
+.topbar .logo { font-size: 17px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.topbar .logo svg { width: 22px; height: 22px; flex-shrink: 0; }
 .topbar .spacer { flex: 1; }
 .topbar a {
-  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
-  color: white; padding: 7px 14px; border-radius: 5px; text-decoration: none;
-  font-size: 13px; font-weight: 600;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35);
+  color: white; padding: 0 16px; height: 38px; border-radius: 5px; text-decoration: none;
+  font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;
+  transition: background 0.12s;
 }
-.topbar a:hover { background: rgba(255,255,255,0.28); }
-.container { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+.topbar a:hover { background: rgba(255,255,255,0.25); }
+
+/* ---- コンテナ ---- */
+.container { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+
+/* ---- 物件ヘッダー ---- */
 .prop-header {
-  background: white; border-radius: 10px; padding: 16px 20px;
-  margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  background: white; border-radius: 8px; padding: 18px 20px;
+  margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
-.prop-header h2 { font-size: 18px; font-weight: 800; color: #2c3e50; margin-bottom: 4px; }
-.prop-header p { font-size: 13px; color: #888; }
-.history-list { display: flex; flex-direction: column; gap: 10px; }
+.prop-header h2 { font-size: 18px; font-weight: 800; color: #1a2433; margin-bottom: 4px; }
+.prop-header p { font-size: 13px; color: #5a6572; }
+
+/* ---- 履歴リスト ---- */
+.history-list { display: flex; flex-direction: column; gap: 8px; }
+
 .history-card {
-  background: white; border-radius: 10px; padding: 16px 20px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  background: white; border-radius: 8px; padding: 16px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   display: flex; align-items: center; gap: 16px;
-  border-left: 5px solid #c0392b;
+  transition: box-shadow 0.15s;
+  /* 左ボーダー帯は使わず、行全体で視覚的まとまりを出す */
 }
-.hist-info { flex: 1; }
-.hist-date { font-size: 16px; font-weight: 700; color: #2c3e50; margin-bottom: 4px; }
-.hist-meta { font-size: 12px; color: #888; display: flex; gap: 12px; flex-wrap: wrap; }
+.history-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.12); }
+
+/* 履歴アイコン */
+.hist-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: #fdf2f2; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.hist-icon svg { color: #c0392b; }
+
+.hist-info { flex: 1; min-width: 0; }
+.hist-date { font-size: 16px; font-weight: 700; color: #1a2433; margin-bottom: 4px; }
+.hist-meta { font-size: 12px; color: #5a6572; display: flex; gap: 12px; flex-wrap: wrap; }
+.hist-meta span { white-space: nowrap; }
+
 .hist-actions { display: flex; gap: 8px; flex-shrink: 0; }
 .act-btn {
-  padding: 7px 14px; border-radius: 5px; font-size: 12px; font-weight: 600;
+  padding: 0 16px; height: 44px; border-radius: 6px; font-size: 13px; font-weight: 600;
   cursor: pointer; border: none; text-decoration: none; font-family: inherit;
-  display: inline-flex; align-items: center; gap: 4px;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background 0.12s;
 }
 .act-btn.view { background: #c0392b; color: white; }
 .act-btn.view:hover { background: #a93226; }
-.empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
-.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+/* ---- 空状態 ---- */
+.empty-state { text-align: center; padding: 60px 20px; color: #7a8796; }
+.empty-state .empty-icon { width: 56px; height: 56px; margin: 0 auto 14px; color: #c0d0dc; }
+.empty-state p { font-size: 14px; line-height: 1.7; }
+
+/* ---- フッター ---- */
 .psl-footer {
   text-align: center; padding: 24px 16px;
-  font-size: 11px; color: #bbb; border-top: 1px solid #eee; margin-top: 40px;
+  font-size: 11px; color: #b0bec5; border-top: 1px solid #e4e8ed; margin-top: 40px;
 }
-.psl-footer a { color: #bbb; text-decoration: none; }
-.psl-footer a:hover { color: #888; }
+.psl-footer a { color: #b0bec5; text-decoration: none; }
+.psl-footer a:hover { color: #7a8796; }
+
+/* ---- レスポンシブ ---- */
+@media (max-width: 600px) {
+  .history-card { flex-wrap: wrap; gap: 12px; }
+  .hist-actions { width: 100%; }
+  .act-btn { flex: 1; justify-content: center; height: 48px; font-size: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history-card, .act-btn { transition: none; }
+}
 </style>
 </head>
 <body>
+
 <div class="topbar">
-  <span class="logo">🔥 消防点検</span>
+  <span class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M12 2C8 6 6 10 8 14a5 5 0 0 0 8 0c2-4 0-8-4-12z"/>
+      <path d="M12 14v4"/>
+    </svg>
+    消防点検
+  </span>
   <span class="spacer"></span>
-  <a href="/">← ダッシュボード</a>
+  <a href="/">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="9,2 4,7 9,12"/>
+    </svg>
+    ダッシュボード
+  </a>
 </div>
+
 <div class="container">
   <div class="prop-header">
     <h2>{{ prop.name }}</h2>
-    <p>{{ prop.address or '' }}　点検履歴 {{ inspections|length }}件</p>
+    <p>{% if prop.address %}{{ prop.address }}　{% endif %}点検履歴 {{ inspections|length }}件</p>
   </div>
+
   {% if inspections %}
   <div class="history-list">
     {% for insp in inspections %}
     <div class="history-card">
+      <div class="hist-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="2" width="14" height="16" rx="2"/>
+          <line x1="7" y1="7" x2="13" y2="7"/>
+          <line x1="7" y1="10" x2="13" y2="10"/>
+          <line x1="7" y1="13" x2="10" y2="13"/>
+        </svg>
+      </div>
       <div class="hist-info">
         <div class="hist-date">{{ insp.inspected_at or '日付未記録' }}</div>
         <div class="hist-meta">
           <span>点検者：{{ insp.inspector_name or '未記録' }}</span>
-          <span>点検本数：{{ insp.item_count }}本</span>
-          {% if insp.period_from %}<span>対象期間：{{ insp.period_from }}〜{{ insp.period_to }}</span>{% endif %}
+          <span>{{ insp.item_count }}本</span>
+          {% if insp.period_from %}<span>対象：{{ insp.period_from }}〜{{ insp.period_to }}</span>{% endif %}
         </div>
       </div>
       <div class="hist-actions">
-        <a href="/report/{{ insp.share_token }}" class="act-btn view">📋 点検票を見る</a>
+        <a href="/report/{{ insp.share_token }}" class="act-btn view">点検票を見る</a>
       </div>
     </div>
     {% endfor %}
   </div>
   {% else %}
   <div class="empty-state">
-    <div class="icon">📋</div>
+    <svg class="empty-icon" viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="10" y="8" width="36" height="44" rx="3"/>
+      <line x1="18" y1="22" x2="38" y2="22"/>
+      <line x1="18" y1="30" x2="38" y2="30"/>
+      <line x1="18" y1="38" x2="30" y2="38"/>
+    </svg>
     <p>まだ点検記録がありません。</p>
   </div>
   {% endif %}
 </div>
+
 <div class="psl-footer">Powered by <a href="https://pumpstack-lab.github.io" target="_blank">PumpStack Lab.</a></div>
 </body>
 </html>
