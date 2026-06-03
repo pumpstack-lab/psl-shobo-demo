@@ -187,7 +187,7 @@ table.check td.empty { color: #ddd; }
 
   <div class="ticket-hd">
     <div class="title-block">
-      <div class="title-main">消 火 器 具</div>
+      <div class="title-main">{{ equip_name }}</div>
       <div class="title-sub">機 器 点 検 票</div>
       <div class="title-law">消防法第17条の3の3に基づく点検結果（消防庁告示様式準拠）</div>
     </div>
@@ -223,30 +223,29 @@ table.check td.empty { color: #ddd; }
   </div>
 
   <table class="check">
+    {% set fields = check_schema.fields %}
     <colgroup>
-      <col style="width:28px"><col style="width:85px"><col style="width:75px">
-      <col style="width:55px"><col style="width:42px"><col style="width:48px">
-      <col style="width:55px"><col style="width:48px"><col style="width:44px">
-      <col style="width:60px"><col style="width:64px"><col style="width:38px"><col>
+      <col style="width:28px">
+      <col style="width:85px">
+      {% for f in fields %}
+        {% if f.key not in ['location', 'judgment', 'note'] %}
+        <col style="width:60px">
+        {% endif %}
+      {% endfor %}
+      <col style="width:38px">
+      <col>
     </colgroup>
     <thead>
       <tr>
-        <th rowspan="2">No</th>
-        <th rowspan="2">設置場所</th>
-        <th rowspan="2">種　別</th>
-        <th rowspan="2">能力単位</th>
-        <th rowspan="2">製造年</th>
-        <th colspan="5" class="s-hd">外形等の点検</th>
-        <th rowspan="2">指示圧力値<br>(MPa)</th>
-        <th rowspan="2" class="r-hd">判定</th>
-        <th rowspan="2">備考</th>
-      </tr>
-      <tr>
-        <th class="s-hd">外形</th>
-        <th class="s-hd">安全栓・封板</th>
-        <th class="s-hd">本体容器</th>
-        <th class="s-hd">キャップ</th>
-        <th class="s-hd">ホース・<br>ノズル</th>
+        <th>No</th>
+        <th>設置場所</th>
+        {% for f in fields %}
+          {% if f.key not in ['location', 'judgment', 'note'] %}
+          <th class="s-hd">{{ f.label }}</th>
+          {% endif %}
+        {% endfor %}
+        <th class="r-hd">判定</th>
+        <th>備考</th>
       </tr>
     </thead>
     <tbody>
@@ -254,15 +253,12 @@ table.check td.empty { color: #ddd; }
       <tr>
         <td>{{ item.no }}</td>
         <td class="tl">{{ item['location'] }}</td>
-        <td>{{ item['type'] }}</td>
-        <td>{{ item['capacity'] }}</td>
-        <td>{{ item['year'] }}</td>
-        <td{% if item['outer'] != '正常' %} class="abn"{% endif %}>{{ item['outer'] }}</td>
-        <td{% if item['safety_pin'] != '正常' %} class="abn"{% endif %}>{{ item['safety_pin'] }}</td>
-        <td{% if item['body'] != '正常' %} class="abn"{% endif %}>{{ item['body'] }}</td>
-        <td{% if item['cap'] != '正常' %} class="abn"{% endif %}>{{ item['cap'] }}</td>
-        <td{% if item['hose'] != '正常' %} class="abn"{% endif %}>{{ item['hose'] }}</td>
-        <td>{{ item['pressure'] or '－' }}</td>
+        {% for f in fields %}
+          {% if f.key not in ['location', 'judgment', 'note'] %}
+            {% set val = item.get(f.key) or item['extra'].get(f.key, '') %}
+            <td{% if val and val != '正常' and val != 'なし' %} class="abn"{% endif %}>{{ val or '－' }}</td>
+          {% endif %}
+        {% endfor %}
         <td class="{{ 'ok' if item['is_ok'] else 'ng' }}">{{ item['judgment'] }}</td>
         <td class="tl">{{ item['note'] }}</td>
       </tr>
@@ -271,9 +267,9 @@ table.check td.empty { color: #ddd; }
       {% for i in range(pad) %}
       <tr>
         <td class="empty">{{ items|length + i + 1 }}</td>
-        <td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td><td></td><td></td>
-        <td></td><td></td><td></td>
+        <td></td>
+        {% for f in fields %}{% if f.key not in ['location', 'judgment', 'note'] %}<td></td>{% endif %}{% endfor %}
+        <td></td><td></td>
       </tr>
       {% endfor %}
     </tbody>

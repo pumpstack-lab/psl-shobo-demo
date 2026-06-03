@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, abort, g
-import sqlite3, os, uuid
+import sqlite3, os, uuid, json
 from datetime import datetime, date, timedelta
 
 app = Flask(__name__)
@@ -105,6 +105,8 @@ def migrate_equipment_type_col(db):
     cols = [r[1] for r in db.execute("PRAGMA table_info(inspection_items)").fetchall()]
     if "equipment_type" not in cols:
         db.execute("ALTER TABLE inspection_items ADD COLUMN equipment_type TEXT DEFAULT 'extinguisher'")
+    if "extra_data" not in cols:
+        db.execute("ALTER TABLE inspection_items ADD COLUMN extra_data TEXT DEFAULT '{}'")
 
 
 EQUIPMENT_TYPES = [
@@ -231,17 +233,30 @@ def inspect(pid):
              inspected_at, f.get("period_from",""), f.get("period_to",""), token)
         )
         insp_id = cur.lastrowid
+        equip_type = f.get("equipment_type", "extinguisher")
+        schema_row = db.execute(
+            "SELECT check_schema FROM equipment_types WHERE id=?", (equip_type,)
+        ).fetchone()
+        schema_fields = []
+        if schema_row:
+            schema_fields = json.loads(schema_row["check_schema"]).get("fields", [])
+        fixed_keys = {"location","type","capacity","year","outer","safety_pin","body","cap","hose","pressure","judgment","note"}
         for i in range(1, count + 1):
+            extra = {
+                field["key"]: f.get(f"{field['key']}_{i}", "")
+                for field in schema_fields
+                if field["key"] not in fixed_keys
+            }
             db.execute(
-                "INSERT INTO inspection_items (inspection_id,no,location,type,capacity,year,outer,safety_pin,body,cap,hose,pressure,judgment,note,equipment_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO inspection_items (inspection_id,no,location,type,capacity,year,outer,safety_pin,body,cap,hose,pressure,judgment,note,equipment_type,extra_data) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (insp_id, i,
                  f.get(f"location_{i}",""), f.get(f"type_{i}",""),
                  f.get(f"capacity_{i}",""), f.get(f"year_{i}",""),
-                 f.get(f"outer_{i}","正常"), f.get(f"safety_pin_{i}","正常"),
-                 f.get(f"body_{i}","正常"), f.get(f"cap_{i}","正常"),
-                 f.get(f"hose_{i}","正常"), f.get(f"pressure_{i}",""),
+                 f.get(f"outer_{i}",""), f.get(f"safety_pin_{i}",""),
+                 f.get(f"body_{i}",""), f.get(f"cap_{i}",""),
+                 f.get(f"hose_{i}",""), f.get(f"pressure_{i}",""),
                  f.get(f"judgment_{i}","適"), f.get(f"note_{i}",""),
-                 f.get("equipment_type","extinguisher"))
+                 equip_type, json.dumps(extra, ensure_ascii=False))
             )
         # 次回点検日を6ヶ月後に自動更新
         try:
@@ -254,17 +269,15 @@ def inspect(pid):
         )
         db.commit()
         return redirect(url_for("report_preview", token=token))
-    import json as _json
-    db2 = get_db()
-    equip_types = [dict(r) for r in db2.execute(
+    equip_types = [dict(r) for r in db.execute(
         "SELECT id, name FROM equipment_types ORDER BY sort_order"
     ).fetchall()]
     selected_type = request.args.get("type", "extinguisher")
-    schema_row = db2.execute(
+    schema_row = db.execute(
         "SELECT check_schema FROM equipment_types WHERE id=?", (selected_type,)
     ).fetchone()
     _raw = schema_row["check_schema"] if schema_row else '{"fields":[]}'
-    check_schema = _json.loads(_raw)
+    check_schema = json.loads(_raw)
     return render_template("inspect.html", prop=prop,
                            extinguisher_types=EXTINGUISHER_TYPES,
                            check_options=CHECK_OPTIONS,
@@ -286,10 +299,26 @@ def report_preview(token):
         "SELECT * FROM inspection_items WHERE inspection_id=? ORDER BY no",
         (insp["id"],)
     ).fetchall()
-    items = [{**dict(r), "is_ok": r["judgment"] == "適"} for r in items_raw]
+    items = []
+    for r in items_raw:
+        item = dict(r)
+        item["is_ok"] = r["judgment"] == "適"
+        try:
+            item["extra"] = json.loads(r["extra_data"] or "{}")
+        except Exception:
+            item["extra"] = {}
+        items.append(item)
+    equip_type = items[0]["equipment_type"] if items else "extinguisher"
+    schema_row = db.execute(
+        "SELECT name, check_schema FROM equipment_types WHERE id=?", (equip_type,)
+    ).fetchone()
+    check_schema = json.loads(schema_row["check_schema"]) if schema_row else {"fields": []}
+    equip_name = schema_row["name"] if schema_row else "消火器"
     share_url = request.host_url.rstrip("/") + url_for("report_share", token=token)
     return render_template("report_preview.html", insp=dict(insp),
-                           items=items, share_url=share_url)
+                           items=items, share_url=share_url,
+                           check_schema=check_schema, equip_name=equip_name,
+                           equip_type=equip_type)
 
 @app.route("/share/<token>")
 def report_share(token):
@@ -305,8 +334,24 @@ def report_share(token):
         "SELECT * FROM inspection_items WHERE inspection_id=? ORDER BY no",
         (insp["id"],)
     ).fetchall()
-    items = [{**dict(r), "is_ok": r["judgment"] == "適"} for r in items_raw]
-    return render_template("report_share.html", insp=dict(insp), items=items)
+    items = []
+    for r in items_raw:
+        item = dict(r)
+        item["is_ok"] = r["judgment"] == "適"
+        try:
+            item["extra"] = json.loads(r["extra_data"] or "{}")
+        except Exception:
+            item["extra"] = {}
+        items.append(item)
+    equip_type = items[0]["equipment_type"] if items else "extinguisher"
+    schema_row = db.execute(
+        "SELECT name, check_schema FROM equipment_types WHERE id=?", (equip_type,)
+    ).fetchone()
+    check_schema = json.loads(schema_row["check_schema"]) if schema_row else {"fields": []}
+    equip_name = schema_row["name"] if schema_row else "消火器"
+    return render_template("report_share.html", insp=dict(insp), items=items,
+                           check_schema=check_schema, equip_name=equip_name,
+                           equip_type=equip_type)
 
 @app.route("/property/<int:pid>/history")
 def property_history(pid):

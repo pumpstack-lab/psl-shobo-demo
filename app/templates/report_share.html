@@ -135,7 +135,7 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
       </div>
       <div class="s-item">
         <div class="lbl">点検本数</div>
-        <div class="val">消火器 {{ items | length }} 本</div>
+        <div class="val">{{ equip_name }} {{ items | length }} 台</div>
       </div>
     </div>
   </div>
@@ -160,23 +160,31 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
   </div>
   {% endif %}
 
-  <!-- 消火器別結果 -->
+  <!-- 設備別結果 -->
+  {% set fields = check_schema.fields %}
   <div class="result-card">
-    <div class="result-card-title">消火器 点検結果一覧</div>
+    <div class="result-card-title">{{ equip_name }} 点検結果一覧</div>
     {% for item in items %}
     <div class="result-row">
       <div class="result-no">{{ item.no }}</div>
       <div class="result-info">
-        <div class="loc">{{ item['location'] or '—' }}　<span style="font-weight:400;color:#888;font-size:12px">{{ item['type'] }}</span></div>
-        <div class="detail">
-          能力：{{ item['capacity'] or '—' }}　製造年：{{ item['year'] or '—' }}
-          {% if item['pressure'] %}　圧力：{{ item['pressure'] }}MPa{% endif %}
+        {% set ns = namespace(shown=false) %}
+        <div class="loc">{{ item['location'] or '—' }}
+          {% for f in fields %}
+            {% if not ns.shown and f.key not in ['location', 'judgment', 'note'] %}
+              {% set val = item.get(f.key) or item['extra'].get(f.key, '') %}
+              {% if val %}　<span style="font-weight:400;color:#888;font-size:12px">{{ val }}</span>{% set ns.shown = true %}{% endif %}
+            {% endif %}
+          {% endfor %}
         </div>
         {% if not item['is_ok'] %}
         <div class="ng-detail">
-          {% if item['outer'] != '正常' %}外形：{{ item['outer'] }}　{% endif %}
-          {% if item['safety_pin'] != '正常' %}安全栓：{{ item['safety_pin'] }}　{% endif %}
-          {% if item['body'] != '正常' %}本体：{{ item['body'] }}　{% endif %}
+          {% for f in fields %}
+            {% if f.key not in ['location', 'judgment', 'note'] %}
+              {% set val = item.get(f.key) or item['extra'].get(f.key, '') %}
+              {% if val and val != '正常' and val != 'なし' %}{{ f.label }}：{{ val }}　{% endif %}
+            {% endif %}
+          {% endfor %}
           {% if item['note'] %}{{ item['note'] }}{% endif %}
         </div>
         {% endif %}
