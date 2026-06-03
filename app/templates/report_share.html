@@ -91,6 +91,13 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
   body { background: white; }
   .summary-card, .result-card, .footer-note { box-shadow: none; }
 }
+
+.psl-footer {
+  text-align: center; padding: 24px 16px;
+  font-size: 11px; color: #bbb; border-top: 1px solid #eee; margin-top: 40px;
+}
+.psl-footer a { color: #bbb; text-decoration: none; }
+.psl-footer a:hover { color: #888; }
 </style>
 </head>
 <body>
@@ -190,5 +197,6 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
   <button class="print-btn" onclick="window.print()">🖨 この報告書を印刷・保存</button>
 </div>
 
+<div class="psl-footer">Powered by <a href="https://pumpstack-lab.github.io" target="_blank">PumpStack Lab.</a></div>
 </body>
 </html>
