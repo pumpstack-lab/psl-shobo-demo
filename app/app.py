@@ -263,13 +263,14 @@ def inspect(pid):
     schema_row = db2.execute(
         "SELECT check_schema FROM equipment_types WHERE id=?", (selected_type,)
     ).fetchone()
-    check_schema_json = schema_row["check_schema"] if schema_row else '{"fields":[]}'
+    _raw = schema_row["check_schema"] if schema_row else '{"fields":[]}'
+    check_schema = _json.loads(_raw)
     return render_template("inspect.html", prop=prop,
                            extinguisher_types=EXTINGUISHER_TYPES,
                            check_options=CHECK_OPTIONS,
                            equip_types=equip_types,
                            selected_type=selected_type,
-                           check_schema_json=check_schema_json)
+                           check_schema=check_schema)
 
 @app.route("/report/<token>")
 def report_preview(token):

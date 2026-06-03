@@ -188,7 +188,7 @@ input.check-input:focus { outline: none; border-color: #c0392b; }
 </div>
 
 <script>
-const SCHEMA = {{ check_schema_json | safe }};
+const SCHEMA = {{ check_schema | tojson }};
 const fields = SCHEMA.fields || [];
 let count = 0;
 
@@ -237,14 +237,27 @@ function onJudge(sel, n) {
 }
 
 function updateCount() {
-  const cards = document.querySelectorAll('.ext-card').length;
-  document.getElementById('countInput').value = cards;
-  document.getElementById('topCount').textContent = cards + ' 件';
-  document.getElementById('bottomCount').textContent = cards + ' 件';
-  document.querySelectorAll('.ext-card').forEach(function(c, i) {
+  const cards = document.querySelectorAll('.ext-card');
+  cards.forEach(function(c, i) {
+    const newN = i + 1;
+    c.querySelectorAll('[name]').forEach(function(el) {
+      el.name = el.name.replace(/_\d+$/, '_' + newN);
+    });
+    c.querySelectorAll('[id^="jsel_"]').forEach(function(el) {
+      el.id = 'jsel_' + newN;
+    });
+    c.querySelectorAll('[onclick*="onJudge"]').forEach(function(el) {
+      el.setAttribute('onclick', 'onJudge(this,' + newN + ')');
+    });
+    c.querySelectorAll('[onclick*="delCard"]').forEach(function(el) {
+      el.setAttribute('onclick', 'delCard(' + newN + ')');
+    });
     const hd = c.querySelector('.ext-num');
-    if (hd) hd.textContent = 'No.' + (i + 1);
+    if (hd) hd.textContent = 'No.' + newN;
   });
+  document.getElementById('countInput').value = cards.length;
+  document.getElementById('topCount').textContent = cards.length + ' 件';
+  document.getElementById('bottomCount').textContent = cards.length + ' 件';
 }
 
 function submitForm() {
