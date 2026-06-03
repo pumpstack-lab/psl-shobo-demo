@@ -70,6 +70,12 @@ def init_db():
         note TEXT,
         FOREIGN KEY (inspection_id) REFERENCES inspections(id)
     );
+    CREATE TABLE IF NOT EXISTS equipment_types (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        check_schema TEXT NOT NULL,
+        sort_order INTEGER DEFAULT 0
+    );
     """)
     # デモ用サンプル物件
     count = db.execute("SELECT COUNT(*) FROM properties").fetchone()[0]
@@ -89,8 +95,57 @@ def init_db():
             db.execute(
                 "INSERT INTO properties (name,address,owner_name,owner_contact,last_inspected,next_inspection) VALUES (?,?,?,?,?,?)",
                 s)
+    migrate_equipment_type_col(db)
+    seed_equipment_types(db)
     db.commit()
     db.close()
+
+
+def migrate_equipment_type_col(db):
+    cols = [r[1] for r in db.execute("PRAGMA table_info(inspection_items)").fetchall()]
+    if "equipment_type" not in cols:
+        db.execute("ALTER TABLE inspection_items ADD COLUMN equipment_type TEXT DEFAULT 'extinguisher'")
+        db.commit()
+
+
+EQUIPMENT_TYPES = [
+    {
+        "id": "extinguisher",
+        "name": "消火器",
+        "sort_order": 0,
+        "check_schema": '{"fields":[{"key":"location","label":"設置場所","type":"text","placeholder":"例）1F廊下"},{"key":"type","label":"種別","type":"select","options":["粉末ABC型","粉末BC型","強化液型","化学泡型","機械泡型","CO2型","ハロン型","水型"]},{"key":"capacity","label":"能力単位","type":"text","placeholder":"ABC-3"},{"key":"year","label":"製造年","type":"text","placeholder":"2020"},{"key":"outer","label":"外形","type":"select","options":["正常","変形","腐食","損傷"]},{"key":"safety_pin","label":"安全栓・封板","type":"select","options":["正常","脱落","変形","破れ"]},{"key":"body","label":"本体容器","type":"select","options":["正常","変形","腐食","損傷"]},{"key":"cap","label":"キャップ","type":"select","options":["正常","変形","腐食"]},{"key":"hose","label":"ホース・ノズル","type":"select","options":["正常","変形","詰まり","損傷"]},{"key":"pressure","label":"指示圧力値(MPa)","type":"text","placeholder":"0.85"},{"key":"note","label":"備考","type":"text","placeholder":"特記事項"}]}'
+    },
+    {
+        "id": "fire_alarm",
+        "name": "自動火災報知設備",
+        "sort_order": 1,
+        "check_schema": '{"fields":[{"key":"location","label":"設置場所","type":"text","placeholder":"例）2F会議室"},{"key":"device_type","label":"機器種別","type":"select","options":["差動式感知器","定温式感知器","光電式感知器","受信機","発信機","中継器"]},{"key":"outer","label":"外形・腐食","type":"select","options":["正常","変形","腐食","損傷"]},{"key":"detach","label":"脱落・未警戒","type":"select","options":["なし","脱落あり","未警戒あり"]},{"key":"dirt","label":"汚損・障害物","type":"select","options":["正常","汚損あり","障害物あり"]},{"key":"action_test","label":"作動試験","type":"select","options":["正常","異常","未実施"]},{"key":"note","label":"備考","type":"text","placeholder":"特記事項"}]}'
+    },
+    {
+        "id": "guidance_light",
+        "name": "誘導灯・非常照明",
+        "sort_order": 2,
+        "check_schema": '{"fields":[{"key":"location","label":"設置場所","type":"text","placeholder":"例）非常口上部"},{"key":"device_type","label":"種別","type":"select","options":["避難口誘導灯","通路誘導灯","客席誘導灯","非常照明"]},{"key":"outer","label":"外形・変形","type":"select","options":["正常","変形","損傷"]},{"key":"light","label":"点灯確認","type":"select","options":["正常点灯","不点灯","チラツキ"]},{"key":"battery","label":"バッテリー","type":"select","options":["正常","要交換","劣化"]},{"key":"note","label":"備考","type":"text","placeholder":"特記事項"}]}'
+    },
+    {
+        "id": "hydrant",
+        "name": "屋内消火栓",
+        "sort_order": 3,
+        "check_schema": '{"fields":[{"key":"location","label":"設置場所","type":"text","placeholder":"例）1F廊下"},{"key":"device_type","label":"種別","type":"select","options":["1号消火栓","2号消火栓","易操作性1号"]},{"key":"outer","label":"外形・変形","type":"select","options":["正常","変形","腐食","損傷"]},{"key":"hose","label":"ホース","type":"select","options":["正常","劣化","損傷","折れ癖"]},{"key":"nozzle","label":"ノズル","type":"select","options":["正常","変形","詰まり"]},{"key":"valve","label":"バルブ","type":"select","options":["正常","開閉不良","漏水"]},{"key":"water_test","label":"放水試験","type":"select","options":["正常","圧力不足","未実施"]},{"key":"note","label":"備考","type":"text","placeholder":"特記事項"}]}'
+    },
+]
+
+
+def seed_equipment_types(db):
+    for et in EQUIPMENT_TYPES:
+        existing = db.execute("SELECT id FROM equipment_types WHERE id=?", (et["id"],)).fetchone()
+        if not existing:
+            db.execute(
+                "INSERT INTO equipment_types (id, name, check_schema, sort_order) VALUES (?,?,?,?)",
+                (et["id"], et["name"], et["check_schema"], et["sort_order"])
+            )
+    db.commit()
+
 
 # ─── ステータス計算 ──────────────────────────────────
 def calc_status(next_inspection_str):
