@@ -105,7 +105,6 @@ def migrate_equipment_type_col(db):
     cols = [r[1] for r in db.execute("PRAGMA table_info(inspection_items)").fetchall()]
     if "equipment_type" not in cols:
         db.execute("ALTER TABLE inspection_items ADD COLUMN equipment_type TEXT DEFAULT 'extinguisher'")
-        db.commit()
 
 
 EQUIPMENT_TYPES = [
@@ -144,7 +143,6 @@ def seed_equipment_types(db):
                 "INSERT INTO equipment_types (id, name, check_schema, sort_order) VALUES (?,?,?,?)",
                 (et["id"], et["name"], et["check_schema"], et["sort_order"])
             )
-    db.commit()
 
 
 # ─── ステータス計算 ──────────────────────────────────
@@ -296,7 +294,6 @@ def report_share(token):
     return render_template("report_share.html", insp=dict(insp), items=items)
 
 if __name__ == "__main__":
-    init_db()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
 
