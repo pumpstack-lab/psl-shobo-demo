@@ -69,8 +69,8 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
 
 /* NG詳細 */
 .ng-detail {
-  background: #fff8f8; border-left: 3px solid #c0392b;
-  padding: 6px 10px; margin-top: 4px; border-radius: 0 4px 4px 0; font-size: 11px; color: #c0392b;
+  background: #fdf2f2; border: 1px solid #f5c6c6;
+  padding: 6px 10px; margin-top: 4px; border-radius: 4px; font-size: 11px; color: #a93226;
 }
 
 .footer-note {
@@ -89,7 +89,12 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
 @media print {
   .print-btn { display: none; }
   body { background: white; }
-  .summary-card, .result-card, .footer-note { box-shadow: none; }
+  .summary-card, .result-card, .footer-note { box-shadow: none; border: 1px solid #e0e0e0; }
+  .result-card-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .verdict { -webkit-print-color-adjust: exact; print-color-adjust: exact; page-break-inside: avoid; }
+  .result-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ng-detail { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 
 .psl-footer {
@@ -111,7 +116,7 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
 
   <!-- 点検情報サマリー -->
   <div class="summary-card">
-    <div class="summary-title">▶ 点検実施概要</div>
+    <div class="summary-title">点検実施概要</div>
     <div class="summary-grid">
       <div class="s-item">
         <div class="lbl">物件名称</div>
@@ -147,7 +152,7 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
     <span class="icon">⚠️</span>
     <div class="text">
       <div class="main">要対応あり（{{ ng_items | length }}件）</div>
-      <div class="sub">下記の消火器は交換・修理が必要です。早めにご対応ください。</div>
+      <div class="sub">下記の{{ equip_name }}は交換・修理が必要です。早めにご対応ください。</div>
     </div>
   </div>
   {% else %}
@@ -155,7 +160,7 @@ body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f5f5f5; 
     <span class="icon">✅</span>
     <div class="text">
       <div class="main">異常なし — すべて良好</div>
-      <div class="sub">点検対象のすべての消火器に異常は認められませんでした。</div>
+      <div class="sub">点検対象のすべての{{ equip_name }}に異常は認められませんでした。</div>
     </div>
   </div>
   {% endif %}
