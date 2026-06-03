@@ -233,14 +233,15 @@ def inspect(pid):
         insp_id = cur.lastrowid
         for i in range(1, count + 1):
             db.execute(
-                "INSERT INTO inspection_items (inspection_id,no,location,type,capacity,year,outer,safety_pin,body,cap,hose,pressure,judgment,note) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO inspection_items (inspection_id,no,location,type,capacity,year,outer,safety_pin,body,cap,hose,pressure,judgment,note,equipment_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 (insp_id, i,
-                 f.get(f"location_{i}",""), f.get(f"type_{i}","粉末ABC型"),
+                 f.get(f"location_{i}",""), f.get(f"type_{i}",""),
                  f.get(f"capacity_{i}",""), f.get(f"year_{i}",""),
                  f.get(f"outer_{i}","正常"), f.get(f"safety_pin_{i}","正常"),
                  f.get(f"body_{i}","正常"), f.get(f"cap_{i}","正常"),
                  f.get(f"hose_{i}","正常"), f.get(f"pressure_{i}",""),
-                 f.get(f"judgment_{i}","適"), f.get(f"note_{i}",""))
+                 f.get(f"judgment_{i}","適"), f.get(f"note_{i}",""),
+                 f.get("equipment_type","extinguisher"))
             )
         # 次回点検日を6ヶ月後に自動更新
         try:
@@ -253,9 +254,22 @@ def inspect(pid):
         )
         db.commit()
         return redirect(url_for("report_preview", token=token))
+    import json as _json
+    db2 = get_db()
+    equip_types = [dict(r) for r in db2.execute(
+        "SELECT id, name FROM equipment_types ORDER BY sort_order"
+    ).fetchall()]
+    selected_type = request.args.get("type", "extinguisher")
+    schema_row = db2.execute(
+        "SELECT check_schema FROM equipment_types WHERE id=?", (selected_type,)
+    ).fetchone()
+    check_schema_json = schema_row["check_schema"] if schema_row else '{"fields":[]}'
     return render_template("inspect.html", prop=prop,
                            extinguisher_types=EXTINGUISHER_TYPES,
-                           check_options=CHECK_OPTIONS)
+                           check_options=CHECK_OPTIONS,
+                           equip_types=equip_types,
+                           selected_type=selected_type,
+                           check_schema_json=check_schema_json)
 
 @app.route("/report/<token>")
 def report_preview(token):
