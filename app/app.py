@@ -293,6 +293,22 @@ def report_share(token):
     items = [{**dict(r), "is_ok": r["judgment"] == "適"} for r in items_raw]
     return render_template("report_share.html", insp=dict(insp), items=items)
 
+@app.route("/property/<int:pid>/history")
+def property_history(pid):
+    db = get_db()
+    prop = db.execute("SELECT * FROM properties WHERE id=?", (pid,)).fetchone()
+    if not prop:
+        abort(404)
+    inspections = db.execute(
+        "SELECT i.*, COUNT(ii.id) as item_count "
+        "FROM inspections i "
+        "LEFT JOIN inspection_items ii ON ii.inspection_id=i.id "
+        "WHERE i.property_id=? "
+        "GROUP BY i.id ORDER BY i.inspected_at DESC",
+        (pid,)
+    ).fetchall()
+    return render_template("history.html", prop=dict(prop), inspections=[dict(i) for i in inspections])
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

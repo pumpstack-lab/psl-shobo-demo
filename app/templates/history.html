@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>点検履歴 | {{ prop.name }}</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Hiragino Sans', 'Meiryo', sans-serif; background: #f0f2f5; min-height: 100vh; }
+.topbar {
+  background: #c0392b; color: white; padding: 0 20px; height: 52px;
+  display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.topbar .logo { font-size: 18px; font-weight: 800; }
+.topbar .spacer { flex: 1; }
+.topbar a {
+  background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+  color: white; padding: 7px 14px; border-radius: 5px; text-decoration: none;
+  font-size: 13px; font-weight: 600;
+}
+.topbar a:hover { background: rgba(255,255,255,0.28); }
+.container { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+.prop-header {
+  background: white; border-radius: 10px; padding: 16px 20px;
+  margin-bottom: 20px; box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.prop-header h2 { font-size: 18px; font-weight: 800; color: #2c3e50; margin-bottom: 4px; }
+.prop-header p { font-size: 13px; color: #888; }
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+.history-card {
+  background: white; border-radius: 10px; padding: 16px 20px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  display: flex; align-items: center; gap: 16px;
+  border-left: 5px solid #c0392b;
+}
+.hist-info { flex: 1; }
+.hist-date { font-size: 16px; font-weight: 700; color: #2c3e50; margin-bottom: 4px; }
+.hist-meta { font-size: 12px; color: #888; display: flex; gap: 12px; flex-wrap: wrap; }
+.hist-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.act-btn {
+  padding: 7px 14px; border-radius: 5px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: none; text-decoration: none; font-family: inherit;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.act-btn.view { background: #c0392b; color: white; }
+.act-btn.view:hover { background: #a93226; }
+.empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
+.empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+.psl-footer {
+  text-align: center; padding: 24px 16px;
+  font-size: 11px; color: #bbb; border-top: 1px solid #eee; margin-top: 40px;
+}
+.psl-footer a { color: #bbb; text-decoration: none; }
+.psl-footer a:hover { color: #888; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="logo">🔥 消防点検</span>
+  <span class="spacer"></span>
+  <a href="/">← ダッシュボード</a>
+</div>
+<div class="container">
+  <div class="prop-header">
+    <h2>{{ prop.name }}</h2>
+    <p>{{ prop.address or '' }}　点検履歴 {{ inspections|length }}件</p>
+  </div>
+  {% if inspections %}
+  <div class="history-list">
+    {% for insp in inspections %}
+    <div class="history-card">
+      <div class="hist-info">
+        <div class="hist-date">{{ insp.inspected_at or '日付未記録' }}</div>
+        <div class="hist-meta">
+          <span>点検者：{{ insp.inspector_name or '未記録' }}</span>
+          <span>点検本数：{{ insp.item_count }}本</span>
+          {% if insp.period_from %}<span>対象期間：{{ insp.period_from }}〜{{ insp.period_to }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="hist-actions">
+        <a href="/report/{{ insp.share_token }}" class="act-btn view">📋 点検票を見る</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">📋</div>
+    <p>まだ点検記録がありません。</p>
+  </div>
+  {% endif %}
+</div>
+<div class="psl-footer">Powered by <a href="https://pumpstack-lab.github.io" target="_blank">PumpStack Lab.</a></div>
+</body>
+</html>
